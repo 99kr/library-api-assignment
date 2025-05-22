@@ -80,7 +80,7 @@ public class BookService {
         else if (!authorRepository.existsById(dto.authorId()))
             response.addError("authorId", "No author exists by id '" + dto.authorId() + "'.");
 
-        if (response.errorCount() > 0)
+        if (response.hasErrors())
             return response.setStatusCode(HttpStatus.BAD_REQUEST);
 
         Book book = bookRepository.save(bookMapper.toEntity(dto));

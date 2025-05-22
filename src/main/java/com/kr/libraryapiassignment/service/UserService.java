@@ -1,5 +1,7 @@
 package com.kr.libraryapiassignment.service;
 
+import com.kr.libraryapiassignment.dto.user.UserLoanResponseDTO;
+import com.kr.libraryapiassignment.dto.user.UserLoanTransientDTO;
 import com.kr.libraryapiassignment.dto.user.UserRequestDTO;
 import com.kr.libraryapiassignment.dto.user.UserResponseDTO;
 import com.kr.libraryapiassignment.entity.User;
@@ -9,6 +11,7 @@ import com.kr.libraryapiassignment.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -35,6 +38,19 @@ public class UserService {
         return response.setData(userMapper.toDTO(userOpt.get()));
     }
 
+    public ApiResponse<List<UserLoanResponseDTO>> findUserLoansById(Long id) {
+        ApiResponse<List<UserLoanResponseDTO>> response = new ApiResponse<>();
+
+        if (!userRepository.existsById(id))
+            return response
+                    .addError("userId", "No user exists by id '" + id + "'.")
+                    .setStatusCode(HttpStatus.NOT_FOUND);
+
+        List<UserLoanTransientDTO> loans = userRepository.findUserLoansById(id);
+
+        return response.setData(userMapper.toDTOLoan(loans));
+    }
+
     public ApiResponse<UserResponseDTO> save(UserRequestDTO dto) {
         ApiResponse<UserResponseDTO> response = new ApiResponse<>();
 
@@ -54,7 +70,7 @@ public class UserService {
         if (dto.password() == null || dto.password().isBlank())
             response.addError("password", "Missing field 'password'");
 
-        if (response.errorCount() > 0)
+        if (response.hasErrors())
             return response.setStatusCode(HttpStatus.BAD_REQUEST);
 
         User user = userRepository.save(userMapper.toEntity(dto));

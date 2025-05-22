@@ -54,7 +54,7 @@ public class AuthorService {
         if (dto.nationality() == null || dto.nationality().isBlank())
             response.addError("nationality", "Missing field 'nationality'.");
 
-        if (response.errorCount() > 0)
+        if (response.hasErrors())
             return response.setStatusCode(HttpStatus.BAD_REQUEST);
 
         Author author = authorRepository.save(authorMapper.toEntity(dto));

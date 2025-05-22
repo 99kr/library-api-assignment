@@ -42,11 +42,20 @@ public class ApiResponse<T> {
         return this;
     }
 
-    public int errorCount() {
-        return errors.size();
+    public boolean hasErrors() {
+        return !errors.isEmpty();
     }
 
     public ResponseEntity<ApiResponse<T>> toEntity() {
         return ResponseEntity.status(statusCode).body(this);
+    }
+
+    public <U> ApiResponse<U> cast() {
+        ApiResponse<U> response = new ApiResponse<>();
+
+        response.setStatusCode(statusCode);
+        errors.forEach(e -> response.addError(e.field(), e.message()));
+
+        return response;
     }
 }

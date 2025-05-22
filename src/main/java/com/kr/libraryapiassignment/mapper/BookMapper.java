@@ -1,9 +1,6 @@
 package com.kr.libraryapiassignment.mapper;
 
-import com.kr.libraryapiassignment.dto.book.BookDetailedResponseDTO;
-import com.kr.libraryapiassignment.dto.book.BookDetailedTransientDTO;
-import com.kr.libraryapiassignment.dto.book.BookRequestDTO;
-import com.kr.libraryapiassignment.dto.book.BookResponseDTO;
+import com.kr.libraryapiassignment.dto.book.*;
 import com.kr.libraryapiassignment.entity.Book;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +33,10 @@ public class BookMapper {
 
     public List<BookDetailedResponseDTO> toDTODetailed(List<BookDetailedTransientDTO> dtos) {
         return dtos.stream().map(this::toDTODetailed).toList();
+    }
+    
+    public BookMinimalResponseDTO toDTOMinimal(Book book) {
+        return new BookMinimalResponseDTO(book.getId(), book.getTitle());
     }
 
     public Book toEntity(BookRequestDTO dto) {
