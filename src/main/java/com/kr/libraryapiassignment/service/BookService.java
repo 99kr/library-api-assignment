@@ -1,8 +1,9 @@
 package com.kr.libraryapiassignment.service;
 
-import com.kr.libraryapiassignment.dto.BookDetailedResponseDTO;
-import com.kr.libraryapiassignment.dto.BookRequestDTO;
-import com.kr.libraryapiassignment.dto.BookResponseDTO;
+import com.kr.libraryapiassignment.dto.book.BookDetailedResponseDTO;
+import com.kr.libraryapiassignment.dto.book.BookDetailedTransientDTO;
+import com.kr.libraryapiassignment.dto.book.BookRequestDTO;
+import com.kr.libraryapiassignment.dto.book.BookResponseDTO;
 import com.kr.libraryapiassignment.entity.Book;
 import com.kr.libraryapiassignment.exception.BookNotFoundException;
 import com.kr.libraryapiassignment.mapper.BookMapper;
@@ -30,7 +31,7 @@ public class BookService {
     public ApiResponse<List<BookResponseDTO>> findAll() {
         ApiResponse<List<BookResponseDTO>> response = new ApiResponse<>();
 
-        return response.setData(bookMapper.toDTOList(bookRepository.findAll()));
+        return response.setData(bookMapper.toDTO(bookRepository.findAll()));
     }
 
     public ApiResponse<List<BookDetailedResponseDTO>> findAll(Optional<String> title, Optional<String> author) {
@@ -45,14 +46,18 @@ public class BookService {
                     .setStatusCode(HttpStatus.BAD_REQUEST);
         }
 
-        return response.setData(bookRepository.findDetailedByTitleAndAuthor(title.orElse(""),
-                                                                            author.orElse("")));
+        List<BookDetailedTransientDTO> books = bookRepository.findDetailedByTitleAndAuthor(title.orElse(""),
+                                                                                           author.orElse(""));
+
+        return response.setData(bookMapper.toDTODetailed(books));
     }
 
     public ApiResponse<List<BookDetailedResponseDTO>> findAllDetailed() {
         ApiResponse<List<BookDetailedResponseDTO>> response = new ApiResponse<>();
 
-        return response.setData(bookRepository.findDetailed());
+        List<BookDetailedTransientDTO> books = bookRepository.findDetailed();
+
+        return response.setData(bookMapper.toDTODetailed(books));
     }
 
     public ApiResponse<BookResponseDTO> findById(Long id) throws BookNotFoundException {
@@ -64,8 +69,8 @@ public class BookService {
         return response.setData(bookMapper.toDTO(bookOpt.get()));
     }
 
-    public ApiResponse<Book> save(BookRequestDTO dto) {
-        ApiResponse<Book> response = new ApiResponse<>();
+    public ApiResponse<BookResponseDTO> save(BookRequestDTO dto) {
+        ApiResponse<BookResponseDTO> response = new ApiResponse<>();
 
         if (dto.title() == null || dto.title().isBlank())
             response.addError("title", "Missing field 'title'.");
@@ -85,6 +90,8 @@ public class BookService {
                     .setStatusCode(HttpStatus.BAD_REQUEST);
         }
 
-        return response.setData(bookRepository.save(bookMapper.toEntity(dto))).setStatusCode(HttpStatus.CREATED);
+        Book book = bookRepository.save(bookMapper.toEntity(dto));
+
+        return response.setData(bookMapper.toDTO(book)).setStatusCode(HttpStatus.CREATED);
     }
 }

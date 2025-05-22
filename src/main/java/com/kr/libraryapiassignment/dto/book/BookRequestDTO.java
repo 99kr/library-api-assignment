@@ -1,4 +1,4 @@
-package com.kr.libraryapiassignment.dto;
+package com.kr.libraryapiassignment.dto.book;
 
 import org.springframework.lang.NonNull;
 

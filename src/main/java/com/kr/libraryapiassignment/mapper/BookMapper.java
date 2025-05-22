@@ -1,7 +1,9 @@
 package com.kr.libraryapiassignment.mapper;
 
-import com.kr.libraryapiassignment.dto.BookRequestDTO;
-import com.kr.libraryapiassignment.dto.BookResponseDTO;
+import com.kr.libraryapiassignment.dto.book.BookDetailedResponseDTO;
+import com.kr.libraryapiassignment.dto.book.BookDetailedTransientDTO;
+import com.kr.libraryapiassignment.dto.book.BookRequestDTO;
+import com.kr.libraryapiassignment.dto.book.BookResponseDTO;
 import com.kr.libraryapiassignment.entity.Book;
 import org.springframework.stereotype.Component;
 
@@ -9,13 +11,31 @@ import java.util.List;
 
 @Component
 public class BookMapper {
+    private final AuthorMapper authorMapper;
+
+    public BookMapper(AuthorMapper authorMapper) {
+        this.authorMapper = authorMapper;
+    }
+
     public BookResponseDTO toDTO(Book book) {
         return new BookResponseDTO(book.getId(), book.getTitle(), book.getPublicationYear(), book.getAvailableCopies(),
                                    book.getTotalCopies());
     }
 
-    public List<BookResponseDTO> toDTOList(List<Book> books) {
+    public List<BookResponseDTO> toDTO(List<Book> books) {
         return books.stream().map(this::toDTO).toList();
+    }
+
+    public BookDetailedResponseDTO toDTODetailed(BookDetailedTransientDTO dto) {
+        Book book = dto.book();
+
+        return new BookDetailedResponseDTO(book.getId(), book.getTitle(), book.getPublicationYear(),
+                                           book.getAvailableCopies(), book.getTotalCopies(),
+                                           authorMapper.toDto(dto.author()));
+    }
+
+    public List<BookDetailedResponseDTO> toDTODetailed(List<BookDetailedTransientDTO> dtos) {
+        return dtos.stream().map(this::toDTODetailed).toList();
     }
 
     public Book toEntity(BookRequestDTO dto) {

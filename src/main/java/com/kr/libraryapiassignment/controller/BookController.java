@@ -1,9 +1,8 @@
 package com.kr.libraryapiassignment.controller;
 
-import com.kr.libraryapiassignment.dto.BookDetailedResponseDTO;
-import com.kr.libraryapiassignment.dto.BookRequestDTO;
-import com.kr.libraryapiassignment.dto.BookResponseDTO;
-import com.kr.libraryapiassignment.entity.Book;
+import com.kr.libraryapiassignment.dto.book.BookDetailedResponseDTO;
+import com.kr.libraryapiassignment.dto.book.BookRequestDTO;
+import com.kr.libraryapiassignment.dto.book.BookResponseDTO;
 import com.kr.libraryapiassignment.exception.BookNotFoundException;
 import com.kr.libraryapiassignment.response.ApiResponse;
 import com.kr.libraryapiassignment.service.BookService;
@@ -53,7 +52,7 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Book>> addBook(@RequestBody BookRequestDTO dto) {
+    public ResponseEntity<ApiResponse<BookResponseDTO>> addBook(@RequestBody BookRequestDTO dto) {
         return bookService.save(dto).toEntity();
     }
 }
