@@ -23,6 +23,7 @@ public class Author {
     @Column(name = "birth_year")
     private int birthYear;
 
+    @Column
     private String nationality;
 
     public Author() {

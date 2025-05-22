@@ -26,7 +26,7 @@ public class AuthorService {
 
         List<Author> authors = authorRepository.findAll();
 
-        return response.setData(authorMapper.toDto(authors));
+        return response.setData(authorMapper.toDTO(authors));
     }
 
     public ApiResponse<List<AuthorResponseDTO>> findAllByLastName(String lastName) {
@@ -34,7 +34,7 @@ public class AuthorService {
 
         List<Author> authors = authorRepository.findAllByLastNameIgnoreCase(lastName);
 
-        return response.setData(authorMapper.toDto(authors));
+        return response.setData(authorMapper.toDTO(authors));
     }
 
     public ApiResponse<AuthorResponseDTO> save(AuthorRequestDTO dto) {
@@ -59,6 +59,6 @@ public class AuthorService {
 
         Author author = authorRepository.save(authorMapper.toEntity(dto));
 
-        return response.setData(authorMapper.toDto(author)).setStatusCode(HttpStatus.CREATED);
+        return response.setData(authorMapper.toDTO(author)).setStatusCode(HttpStatus.CREATED);
     }
 }

@@ -77,18 +77,11 @@ public class BookService {
 
         if (dto.authorId() == null || dto.authorId() == 0)
             response.addError("authorId", "Missing field 'authorId'.");
+        else if (!authorRepository.existsById(dto.authorId()))
+            response.addError("authorId", "No author exists by id '" + dto.authorId() + "'.");
 
         if (response.errorCount() > 0)
             return response.setStatusCode(HttpStatus.BAD_REQUEST);
-
-        assert dto.authorId() != null;
-        boolean authorExists = authorRepository.existsById(dto.authorId());
-
-        if (!authorExists) {
-            return response
-                    .addError("authorId", "No author exists by id " + dto.authorId() + ".")
-                    .setStatusCode(HttpStatus.BAD_REQUEST);
-        }
 
         Book book = bookRepository.save(bookMapper.toEntity(dto));
 

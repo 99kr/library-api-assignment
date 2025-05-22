@@ -10,7 +10,7 @@ public class Book {
     @Column(name = "book_id")
     private Long id;
 
-    @Basic
+    @Column
     private String title;
 
     @Column(name = "publication_year")

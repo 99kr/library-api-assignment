@@ -9,13 +9,13 @@ import java.util.List;
 
 @Component
 public class AuthorMapper {
-    public AuthorResponseDTO toDto(Author author) {
+    public AuthorResponseDTO toDTO(Author author) {
         return new AuthorResponseDTO(author.getId(), author.getFirstName(), author.getLastName(), author.getBirthYear(),
                                      author.getNationality());
     }
 
-    public List<AuthorResponseDTO> toDto(List<Author> authors) {
-        return authors.stream().map(this::toDto).toList();
+    public List<AuthorResponseDTO> toDTO(List<Author> authors) {
+        return authors.stream().map(this::toDTO).toList();
     }
 
     public Author toEntity(AuthorRequestDTO dto) {

@@ -31,7 +31,7 @@ public class BookMapper {
 
         return new BookDetailedResponseDTO(book.getId(), book.getTitle(), book.getPublicationYear(),
                                            book.getAvailableCopies(), book.getTotalCopies(),
-                                           authorMapper.toDto(dto.author()));
+                                           authorMapper.toDTO(dto.author()));
     }
 
     public List<BookDetailedResponseDTO> toDTODetailed(List<BookDetailedTransientDTO> dtos) {
