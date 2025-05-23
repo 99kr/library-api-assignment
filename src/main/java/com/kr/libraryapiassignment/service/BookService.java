@@ -1,6 +1,5 @@
 package com.kr.libraryapiassignment.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kr.libraryapiassignment.dto.book.*;
 import com.kr.libraryapiassignment.entity.Book;
 import com.kr.libraryapiassignment.exception.BookNotFoundException;
@@ -12,7 +11,6 @@ import com.kr.libraryapiassignment.specification.BookSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -50,8 +48,7 @@ public class BookService {
         PageRequest pageRequest = PageRequest.of(pageNum, pageSize, sort);
         Page<Book> pageBooks = bookRepository.findAll(BookSpecification.filter(dto), pageRequest);
 
-        return response.setData(bookMapper.toDTOPageable(pageBooks.getTotalPages(), pageBooks.getTotalElements(),
-                                                         bookMapper.toDTO(pageBooks.toList())));
+        return response.setData(bookMapper.toDTOPageable(pageBooks));
     }
 
     public ApiResponse<List<BookDetailedResponseDTO>> searchBooks(Optional<String> title, Optional<String> author) {

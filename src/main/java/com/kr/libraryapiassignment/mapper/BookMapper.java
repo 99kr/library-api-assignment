@@ -2,6 +2,7 @@ package com.kr.libraryapiassignment.mapper;
 
 import com.kr.libraryapiassignment.dto.book.*;
 import com.kr.libraryapiassignment.entity.Book;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -39,8 +40,13 @@ public class BookMapper {
         return new BookMinimalResponseDTO(book.getId(), book.getTitle());
     }
 
-    public BookPageableResponseDTO toDTOPageable(int totalPages, long totalElements, List<BookResponseDTO> books) {
-        return new BookPageableResponseDTO(totalPages, totalElements, books);
+    public BookPageableResponseDTO toDTOPageable(Page<Book> page) {
+        return new BookPageableResponseDTO(
+                toDTO(page.getContent()),
+                page.getTotalPages(), page.getTotalElements(),
+                page.getNumberOfElements(), page.getSize(),
+                page.isLast(), page.isFirst(),
+                page.hasPrevious(), page.hasNext());
     }
 
     public Book toEntity(BookRequestDTO dto) {
