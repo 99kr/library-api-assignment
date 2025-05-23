@@ -1,20 +1,24 @@
 package com.kr.libraryapiassignment.service;
 
-import com.kr.libraryapiassignment.dto.book.BookDetailedResponseDTO;
-import com.kr.libraryapiassignment.dto.book.BookDetailedTransientDTO;
-import com.kr.libraryapiassignment.dto.book.BookRequestDTO;
-import com.kr.libraryapiassignment.dto.book.BookResponseDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kr.libraryapiassignment.dto.book.*;
 import com.kr.libraryapiassignment.entity.Book;
 import com.kr.libraryapiassignment.exception.BookNotFoundException;
 import com.kr.libraryapiassignment.mapper.BookMapper;
 import com.kr.libraryapiassignment.repository.AuthorRepository;
 import com.kr.libraryapiassignment.repository.BookRepository;
 import com.kr.libraryapiassignment.response.ApiResponse;
+import com.kr.libraryapiassignment.specification.BookSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class BookService {
@@ -28,13 +32,29 @@ public class BookService {
         this.bookMapper = bookMapper;
     }
 
-    public ApiResponse<List<BookResponseDTO>> findAll() {
-        ApiResponse<List<BookResponseDTO>> response = new ApiResponse<>();
+    public ApiResponse<BookPageableResponseDTO> findAll(BookPageableRequestDTO dto) {
+        ApiResponse<BookPageableResponseDTO> response = new ApiResponse<>();
 
-        return response.setData(bookMapper.toDTO(bookRepository.findAll()));
+        int pageNum = dto.pageNumber().orElse(0);
+        int pageSize = 20;
+
+        Sort.Direction direction = Sort.Direction
+                .fromOptionalString(dto.sortOrder().orElse("asc"))
+                .orElse(Sort.Direction.ASC);
+
+        Set<String> validSortFields = Set.of("id", "title", "publicationYear", "availableCopies", "totalCopies");
+        String sortBy = dto.sortBy().filter(validSortFields::contains).orElse("id");
+
+        Sort sort = Sort.by(direction, sortBy);
+
+        PageRequest pageRequest = PageRequest.of(pageNum, pageSize, sort);
+        Page<Book> pageBooks = bookRepository.findAll(BookSpecification.filter(dto), pageRequest);
+
+        return response.setData(bookMapper.toDTOPageable(pageBooks.getTotalPages(), pageBooks.getTotalElements(),
+                                                         bookMapper.toDTO(pageBooks.toList())));
     }
 
-    public ApiResponse<List<BookDetailedResponseDTO>> findAll(Optional<String> title, Optional<String> author) {
+    public ApiResponse<List<BookDetailedResponseDTO>> searchBooks(Optional<String> title, Optional<String> author) {
         ApiResponse<List<BookDetailedResponseDTO>> response = new ApiResponse<>();
 
         String titleValue = title.orElse("");

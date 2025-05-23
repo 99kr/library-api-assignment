@@ -1,11 +1,10 @@
 package com.kr.libraryapiassignment.controller;
 
-import com.kr.libraryapiassignment.dto.book.BookDetailedResponseDTO;
-import com.kr.libraryapiassignment.dto.book.BookRequestDTO;
-import com.kr.libraryapiassignment.dto.book.BookResponseDTO;
+import com.kr.libraryapiassignment.dto.book.*;
 import com.kr.libraryapiassignment.exception.BookNotFoundException;
 import com.kr.libraryapiassignment.response.ApiResponse;
 import com.kr.libraryapiassignment.service.BookService;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +20,19 @@ public class BookController {
         this.bookService = bookService;
     }
 
+    // GET /api/v1/books?page=0&sortOrder=desc&sortBy=title&available=true&yearFrom=1990&yearTo=1997
     @GetMapping
-    public ResponseEntity<ApiResponse<List<BookResponseDTO>>> getAll() {
-        return bookService.findAll().toEntity();
+    public ResponseEntity<ApiResponse<BookPageableResponseDTO>> getAll(
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<String> sortOrder,
+            @RequestParam Optional<String> sortBy,
+            @RequestParam Optional<Boolean> available,
+            @RequestParam Optional<Integer> yearFrom,
+            @RequestParam Optional<Integer> yearTo) {
+
+        return bookService
+                .findAll(new BookPageableRequestDTO(page, sortOrder, sortBy, available, yearFrom, yearTo))
+                .toEntity();
     }
 
     @GetMapping("/detailed")
@@ -48,7 +57,7 @@ public class BookController {
     public ResponseEntity<ApiResponse<List<BookDetailedResponseDTO>>> searchBooks(
             @RequestParam Optional<String> title,
             @RequestParam Optional<String> author) {
-        return bookService.findAll(title, author).toEntity();
+        return bookService.searchBooks(title, author).toEntity();
     }
 
     @PostMapping

@@ -34,9 +34,13 @@ public class BookMapper {
     public List<BookDetailedResponseDTO> toDTODetailed(List<BookDetailedTransientDTO> dtos) {
         return dtos.stream().map(this::toDTODetailed).toList();
     }
-    
+
     public BookMinimalResponseDTO toDTOMinimal(Book book) {
         return new BookMinimalResponseDTO(book.getId(), book.getTitle());
+    }
+
+    public BookPageableResponseDTO toDTOPageable(int totalPages, long totalElements, List<BookResponseDTO> books) {
+        return new BookPageableResponseDTO(totalPages, totalElements, books);
     }
 
     public Book toEntity(BookRequestDTO dto) {
