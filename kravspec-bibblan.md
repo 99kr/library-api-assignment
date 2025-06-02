@@ -50,8 +50,8 @@ Se den medföljande SQLite-databasen (`library.db`) för exakt struktur av:
 
 ### Testing (G)
 
-- Unittest för LoanService.createLoan()
-- Integrationstest för POST /loans
+- Skriv ett test som kontrollerar att rätt datum sätts på dueDate när man lägger ett lån
+- Skriv ett test som kontrollerar att man inte kan lägga ett lån om boken har 0 available copies
 
 ---
 
@@ -85,11 +85,6 @@ Se den medföljande SQLite-databasen (`library.db`) för exakt struktur av:
 ### 6. Exception Handling
 
 - Custom exceptions (BookNotFoundException, etc.)
-
-### Extended Testing (VG)
-
-- Mock testing med **@MockBean**
-- Repository tests med **@DataJpaTest**
 
 ---
 

@@ -144,6 +144,28 @@ public class LoanServiceTest {
     }
 
     @Test
+    @DisplayName("LoanService.createLoan | No available copies")
+    public void createLoan_NoAvailableCopies() {
+        User user = UserMock.entityWithId();
+        Book book = BookMock.entityWithId();
+
+        book.setAvailableCopies(0);
+
+        when(userRepository.existsById(user.getId())).thenReturn(true);
+        when(bookRepository.existsById(book.getId())).thenReturn(true);
+
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
+
+        ApiResponse<LoanResponseDTO> response = loanService.createLoan(new LoanRequestDTO(user.getId(), book.getId()));
+        LoanResponseDTO data = response.getData();
+
+        assertTrue(response.hasErrors());
+        assertEquals(1, response.getErrors().size());
+        assertNull(data);
+    }
+
+    @Test
     @DisplayName("LoanService.createLoan | IllegalStateException | User")
     public void createLoan_IllegalStateExceptionUser() {
         when(userRepository.existsById(1L)).thenReturn(true);

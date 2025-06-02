@@ -87,6 +87,24 @@ public class LoanControllerTest {
     }
 
     @Test
+    @DisplayName("POST /loans | No available copies")
+    void postLoan_NoAvailableCopies() throws Exception {
+        User user = userRepository.save(UserMock.entity());
+
+        Book bookMock = BookMock.entity();
+        bookMock.setAvailableCopies(0);
+
+        Book book = bookRepository.save(bookMock);
+
+        String json = getRequestJson(user.getId(), book.getId());
+
+        mockMvc.perform(post("/api/v1/loans").contentType(MediaType.APPLICATION_JSON).content(json))
+               .andExpect(status().isConflict())
+               .andExpect(jsonPath("$.errors.length()").value(1))
+               .andExpect(jsonPath("$.data").doesNotExist());
+    }
+
+    @Test
     @DisplayName("POST /loans | Successful")
     void postLoan_Success() throws Exception {
         User user = userRepository.save(UserMock.entity());
