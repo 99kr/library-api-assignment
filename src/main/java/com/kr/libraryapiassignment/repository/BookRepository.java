@@ -13,15 +13,17 @@ import java.util.Optional;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
-    @Query("SELECT "
-            + "new com.kr.libraryapiassignment.dto.book.BookDetailedTransientDTO(b, a) "
-            + "from Book b JOIN Author a ON a.id = b.authorId")
+    @Query("""
+            SELECT new com.kr.libraryapiassignment.dto.book.BookDetailedTransientDTO(b, a)
+            FROM Book b JOIN Author a on a.id = b.authorId
+            """)
     List<BookDetailedTransientDTO> findDetailed();
 
-    @Query("SELECT "
-            + "new com.kr.libraryapiassignment.dto.book.BookDetailedTransientDTO(b, a) "
-            + "from Book b JOIN Author a ON a.id = b.authorId "
-            + "WHERE b.title LIKE %:title% AND a.fullName LIKE %:author%")
+    @Query("""
+            SELECT new com.kr.libraryapiassignment.dto.book.BookDetailedTransientDTO(b, a)
+            FROM Book b JOIN Author a on a.id = b.authorId
+            WHERE b.title LIKE %:title% AND a.fullName LIKE %:author%
+            """)
     List<BookDetailedTransientDTO> findDetailedByTitleAndAuthor(@Param("title") String title,
                                                                 @Param("author") String author);
 

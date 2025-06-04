@@ -16,9 +16,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmailIgnoreCase(String email);
 
-    @Query("SELECT "
-            + "new com.kr.libraryapiassignment.dto.user.UserLoanTransientDTO(l, b) "
-            + "from Loan l JOIN Book b ON b.id = l.bookId "
-            + "WHERE l.userId = :userId")
+    @Query("""
+            SELECT new com.kr.libraryapiassignment.dto.user.UserLoanTransientDTO(l, b)
+            FROM Loan l JOIN Book b ON b.id = l.bookId
+            WHERE l.userId = :userId
+            """)
     List<UserLoanTransientDTO> findUserLoansById(@Param("userId") Long userId);
 }
