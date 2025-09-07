@@ -1,11 +1,13 @@
 package com.kr.libraryapiassignment.mapper;
 
 import com.kr.libraryapiassignment.dto.user.*;
+import com.kr.libraryapiassignment.entity.Role;
 import com.kr.libraryapiassignment.entity.User;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class UserMapper {
@@ -19,7 +21,7 @@ public class UserMapper {
 
     public UserResponseDTO toDTO(User user) {
         return new UserResponseDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(),
-                                   user.getRegistrationDate());
+                                   user.getRegistrationDate(), user.getRoles());
     }
 
     public List<UserResponseDTO> toDTO(List<User> users) {
@@ -40,6 +42,6 @@ public class UserMapper {
 
     public User toEntity(UserRequestDTO dto) {
         return new User(null, dto.firstName(), dto.lastName(), dto.email().toLowerCase(), dto.password(),
-                        LocalDateTime.now());
+                        LocalDateTime.now(), Set.of());
     }
 }

@@ -1,13 +1,19 @@
 package com.kr.libraryapiassignment.service;
 
+import com.kr.libraryapiassignment.entity.Permission;
+import com.kr.libraryapiassignment.entity.Role;
 import com.kr.libraryapiassignment.entity.User;
 import com.kr.libraryapiassignment.repository.UserRepository;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -27,11 +33,25 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         User user = optUser.get();
 
+        return buildUserDetails(user);
+    }
+
+    private UserDetails buildUserDetails(User user) {
+        Set<GrantedAuthority> authorities = new HashSet<>();
+
+        for (Role role : user.getRoles()) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+
+            for (Permission permission : role.getPermissions()) {
+                authorities.add(new SimpleGrantedAuthority(permission.getName()));
+            }
+        }
+
         return org.springframework.security.core.userdetails.User
                 .builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .authorities("ROLE_USER")
+                .authorities(authorities)
                 .build();
     }
 }

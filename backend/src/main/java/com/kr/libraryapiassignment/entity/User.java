@@ -3,6 +3,8 @@ package com.kr.libraryapiassignment.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -27,17 +29,26 @@ public class User {
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
     public User() {
     }
 
     public User(Long id, String firstName, String lastName, String email, String password,
-                LocalDateTime registrationDate) {
+                LocalDateTime registrationDate, Set<Role> roles) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.registrationDate = registrationDate;
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -62,5 +73,13 @@ public class User {
 
     public LocalDateTime getRegistrationDate() {
         return registrationDate;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }
