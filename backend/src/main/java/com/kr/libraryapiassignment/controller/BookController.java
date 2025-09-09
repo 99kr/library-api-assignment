@@ -6,6 +6,7 @@ import com.kr.libraryapiassignment.response.ApiResponse;
 import com.kr.libraryapiassignment.service.BookService;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class BookController {
 
     // GET /api/v1/books?page=0&sortOrder=desc&sortBy=title&available=true&yearFrom=1990&yearTo=1997
     @GetMapping
+    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<BookPageableResponseDTO>> getAll(
             @RequestParam Optional<Integer> page,
             @RequestParam Optional<String> sortOrder,

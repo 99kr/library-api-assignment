@@ -1,4 +1,4 @@
-package com.kr.libraryapiassignment.service;
+package com.kr.libraryapiassignment.security;
 
 import com.kr.libraryapiassignment.entity.Permission;
 import com.kr.libraryapiassignment.entity.Role;
@@ -47,11 +47,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             }
         }
 
-        return org.springframework.security.core.userdetails.User
-                .builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .authorities(authorities)
-                .build();
+        return new UserDetailsImpl(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(),
+                                   authorities);
     }
 }

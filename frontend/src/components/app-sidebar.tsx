@@ -14,20 +14,16 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import type { SelfResponse } from '@/hooks/api/useSelf'
+import { useJwt } from '@/hooks/state/useJwt'
 import { useTheme } from '@/hooks/state/useTheme'
 import { cn } from '@/lib/utils'
 
-type Props = {
-	self: SelfResponse | undefined
-	isLoading: boolean
-}
-
 const items = [{ name: 'Books', href: '/books', icon: BookText }]
 
-export function AppSidebar({ self, isLoading }: Props) {
+export function AppSidebar() {
 	const location = useLocation()
 	const toggleTheme = useTheme((state) => state.toggleTheme)
+	const identity = useJwt((state) => state.identity)
 
 	return (
 		<Sidebar variant='floating'>
@@ -65,10 +61,10 @@ export function AppSidebar({ self, isLoading }: Props) {
 			<SidebarFooter
 				className={cn(
 					'transition-opacity opacity-0 ease-in-out',
-					!isLoading && 'opacity-100',
+					identity && 'opacity-100',
 				)}
 			>
-				{!self?.data.isLoggedIn ? (
+				{!identity?.isLoggedIn ? (
 					<Button asChild variant='outline'>
 						<Link to='/login'>Log in</Link>
 					</Button>
@@ -79,9 +75,9 @@ export function AppSidebar({ self, isLoading }: Props) {
 								Role
 							</Badge>
 							<p className='font-medium'>
-								{self.data.firstName} {self.data.lastName}
+								{identity.firstName} {identity.lastName}
 							</p>
-							<p className='text-sm text-base-400'>{self.data.email}</p>
+							<p className='text-sm text-base-400'>{identity.email}</p>
 						</div>
 
 						<Button variant='ghost' size='icon' asChild>

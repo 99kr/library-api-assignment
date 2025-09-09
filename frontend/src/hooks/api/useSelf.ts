@@ -1,4 +1,4 @@
-import useSWR, { preload } from 'swr'
+import useSWR from 'swr'
 import { type BaseResponse, getRequest } from '@/lib/api'
 
 export type SelfResponse = BaseResponse<{
@@ -15,8 +15,4 @@ export const loggedOutState: SelfResponse = {
 
 export function useSelf() {
 	return useSWR<SelfResponse>('/auth/self', getRequest)
-}
-
-export function preloadSelf() {
-	return preload('/auth/self', getRequest)
 }

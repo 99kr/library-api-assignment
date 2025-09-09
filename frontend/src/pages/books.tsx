@@ -15,6 +15,8 @@ export function Books() {
 	const page = Number(params.get('page') ?? 1) - 1
 	const { data: books } = useBooks(page)
 
+	if (!books) return null
+
 	const totalPages = books?.data.totalPages ?? 1
 
 	function setPage(pageNumber: number) {

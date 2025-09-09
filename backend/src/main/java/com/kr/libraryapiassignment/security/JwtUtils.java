@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 
 
 @Component
@@ -65,7 +66,7 @@ public class JwtUtils {
     }
 
     private String generateJwtToken(Authentication authentication, int durationMs, JwtTokenType type) {
-        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
         JwtBuilder jwtBuilder = Jwts.builder()
                                     .setSubject(userPrincipal.getUsername())
@@ -75,7 +76,12 @@ public class JwtUtils {
                                     .signWith(getSigningKey(), SignatureAlgorithm.HS512);
 
         if (type == JwtTokenType.ACCESS) {
-            jwtBuilder.claim("authorities", authentication.getAuthorities());
+            //jwtBuilder.claim("authorities", authentication.getAuthorities());
+            jwtBuilder.addClaims(Map.of(
+                    "authorities", userPrincipal.getAuthorities(),
+                    "firstName", userPrincipal.getFirstName(),
+                    "lastName", userPrincipal.getLastName()
+            ));
         }
 
         return jwtBuilder.compact();

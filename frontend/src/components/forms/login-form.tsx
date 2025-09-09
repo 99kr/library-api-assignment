@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useLogin } from '@/hooks/api/useLogin'
+import { useJwt } from '@/hooks/state/useJwt'
 
 const formSchema = z.object({
 	email: z.email(),
@@ -28,6 +29,7 @@ const formFields = [
 
 export function LoginForm() {
 	const login = useLogin()
+	const jwt = useJwt()
 
 	const form = useForm<FormSchema>({
 		resolver: zodResolver(formSchema),
@@ -37,13 +39,20 @@ export function LoginForm() {
 	const navigate = useNavigate()
 
 	async function handleSubmit(data: FormSchema) {
-		try {
-			await login.trigger(data)
-			navigate('/')
-		} catch {
+		const response = await login.trigger(data)
+
+		if (response.errors.length > 0) {
 			form.setError('email', { message: 'Invalid credentials', type: 'value' })
 			form.setError('password', { message: 'Invalid credentials', type: 'value' })
+			return
 		}
+
+		jwt.setAccessToken(response.data.accessToken)
+		jwt.setIdentityFromJwtToken(response.data.accessToken)
+
+		localStorage.setItem('has_refresh_token', 'true')
+
+		navigate('/')
 	}
 
 	return (

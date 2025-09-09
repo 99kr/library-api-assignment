@@ -1,14 +1,17 @@
 package com.kr.libraryapiassignment.config;
 
+import com.kr.libraryapiassignment.security.AuthAccessDeniedHandler;
 import com.kr.libraryapiassignment.security.AuthEntryPointJwt;
 import com.kr.libraryapiassignment.security.AuthTokenFilter;
-import com.kr.libraryapiassignment.service.UserDetailsServiceImpl;
+import com.kr.libraryapiassignment.security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,13 +25,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
-    private final AuthEntryPointJwt authEntryPoint;
+    private final AuthEntryPointJwt unauthorizedHandler;
+    private final AuthAccessDeniedHandler accessDeniedHandler;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService, AuthEntryPointJwt authEntryPoint) {
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService, AuthEntryPointJwt unauthorizedHandler,
+                          AuthAccessDeniedHandler accessDeniedHandler) {
         this.userDetailsService = userDetailsService;
-        this.authEntryPoint = authEntryPoint;
+        this.unauthorizedHandler = unauthorizedHandler;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
 
     @Bean
@@ -64,8 +71,9 @@ public class SecurityConfig {
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5173")
+                        .allowedHeaders("*")
                         .allowCredentials(true)
-                        .allowedMethods("GET", "POST", "PUT", "DELETE");
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
             }
         };
     }
@@ -74,7 +82,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(authEntryPoint))
+                .cors(Customizer.withDefaults())
+                .exceptionHandling(
+                        configurer -> configurer
+                                .authenticationEntryPoint(unauthorizedHandler)
+                                .accessDeniedHandler(accessDeniedHandler))
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/books").authenticated()

@@ -1,6 +1,5 @@
 package com.kr.libraryapiassignment.security;
 
-import com.kr.libraryapiassignment.service.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

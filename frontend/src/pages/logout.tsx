@@ -2,21 +2,23 @@ import { Link, useNavigate, useSearchParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { useLogout } from '@/hooks/api/useLogout'
-import { loggedOutState, useSelf } from '@/hooks/api/useSelf'
+import { useJwt } from '@/hooks/state/useJwt'
 
 export function Logout() {
 	const logout = useLogout()
 	const navigate = useNavigate()
 	const [params] = useSearchParams()
-	const { mutate: mutateSelf } = useSelf()
 
 	const from = params.get('from') ?? '/'
 
 	const handleLogout = async () => {
 		await logout.trigger()
 
-		//mutateSelf(undefined)
-		mutateSelf(loggedOutState) // Seems to be some race condition, so mutate to force a refresh
+		const jwtState = useJwt.getState()
+		jwtState.setAccessToken(null)
+		jwtState.setIdentityAsLoggedOut()
+
+		localStorage.removeItem('has_refresh_token')
 
 		navigate('/')
 	}
