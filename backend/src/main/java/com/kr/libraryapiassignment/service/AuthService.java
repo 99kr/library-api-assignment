@@ -1,35 +1,43 @@
 package com.kr.libraryapiassignment.service;
 
-import com.kr.libraryapiassignment.dto.auth.LoginRequestDTO;
-import com.kr.libraryapiassignment.dto.auth.LoginResponseDTO;
-import com.kr.libraryapiassignment.dto.auth.LogoutResponseDTO;
-import com.kr.libraryapiassignment.dto.auth.SelfResponseDTO;
+import com.kr.libraryapiassignment.dto.auth.*;
 import com.kr.libraryapiassignment.entity.User;
 import com.kr.libraryapiassignment.repository.UserRepository;
 import com.kr.libraryapiassignment.response.ApiResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import com.kr.libraryapiassignment.security.JwtUtils;
+import com.kr.libraryapiassignment.security.RefreshTokenStatus;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Optional;
 
 @Service
 public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final JwtUtils jwtUtils;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final RefreshTokenService refreshTokenService;
 
-    public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository,
+                       JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService,
+                       RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.jwtUtils = jwtUtils;
+        this.userDetailsService = userDetailsService;
+        this.refreshTokenService = refreshTokenService;
     }
 
-    public ApiResponse<LoginResponseDTO> login(LoginRequestDTO dto, HttpServletRequest request) {
+    public ApiResponse<LoginResponseDTO> login(LoginRequestDTO dto) {
         ApiResponse<LoginResponseDTO> response = new ApiResponse<>();
 
         UsernamePasswordAuthenticationToken token =
@@ -37,23 +45,64 @@ public class AuthService {
 
         Authentication auth = authenticationManager.authenticate(token);
 
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(auth);
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
-        HttpSession session = request.getSession(true);
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+        String accessToken = jwtUtils.generateAccessToken(auth);
+        String refreshToken = jwtUtils.generateRefreshToken(auth);
 
-        return response.setData(new LoginResponseDTO(session.getId()));
+        ResponseCookie refreshCookie = ResponseCookie
+                .from("refresh_token", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .maxAge(Duration.ofMillis(jwtUtils.getJwtRefreshExpirationMs()))
+                .build();
+
+        refreshTokenService.saveToken(
+                refreshToken,
+                jwtUtils.getJwtRefreshExpirationMs()
+        );
+
+        return response.addCookie(refreshCookie).setData(new LoginResponseDTO(accessToken));
     }
 
-    public ApiResponse<LogoutResponseDTO> logout(HttpServletRequest request) {
+    public ApiResponse<RefreshResponseDTO> refresh(@Nullable String refreshToken) {
+        ApiResponse<RefreshResponseDTO> response = new ApiResponse<>();
+
+        if (refreshToken == null) {
+            return response.addError("Invalid refresh token").setStatusCode(HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean isValid = jwtUtils.isValidRefreshToken(refreshToken);
+        RefreshTokenStatus tokenStatus = refreshTokenService.getTokenStatus(refreshToken);
+
+        // clean up if the token has expired
+        if (tokenStatus == RefreshTokenStatus.EXPIRED) {
+            refreshTokenService.deleteToken(refreshToken);
+        }
+
+        if (!isValid || tokenStatus != RefreshTokenStatus.VALID) {
+            return response.addError("Invalid refresh token").setStatusCode(HttpStatus.UNAUTHORIZED);
+        }
+
+        String username = jwtUtils.getUsernameFromToken(refreshToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
+                                                                                userDetails.getAuthorities());
+
+        String accessToken = jwtUtils.generateAccessToken(authentication);
+
+        return response.setData(new RefreshResponseDTO(accessToken));
+    }
+
+    public ApiResponse<LogoutResponseDTO> logout(@Nullable String refreshToken) {
         ApiResponse<LogoutResponseDTO> response = new ApiResponse<>();
 
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(null);
+        if (refreshToken == null) {
+            return response.setData(new LogoutResponseDTO(false)).setStatusCode(HttpStatus.BAD_REQUEST);
+        }
 
-        HttpSession session = request.getSession(true);
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+        refreshTokenService.deleteToken(refreshToken);
 
         return response.setData(new LogoutResponseDTO(true));
     }

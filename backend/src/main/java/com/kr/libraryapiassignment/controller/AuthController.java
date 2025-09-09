@@ -1,12 +1,8 @@
 package com.kr.libraryapiassignment.controller;
 
-import com.kr.libraryapiassignment.dto.auth.LoginRequestDTO;
-import com.kr.libraryapiassignment.dto.auth.LoginResponseDTO;
-import com.kr.libraryapiassignment.dto.auth.LogoutResponseDTO;
-import com.kr.libraryapiassignment.dto.auth.SelfResponseDTO;
+import com.kr.libraryapiassignment.dto.auth.*;
 import com.kr.libraryapiassignment.response.ApiResponse;
 import com.kr.libraryapiassignment.service.AuthService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +17,20 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponseDTO>> login(@RequestBody LoginRequestDTO dto,
-                                                               HttpServletRequest request) {
-        return authService.login(dto, request).toEntity();
+    public ResponseEntity<ApiResponse<LoginResponseDTO>> login(@RequestBody LoginRequestDTO dto) {
+        return authService.login(dto).toEntity();
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<RefreshResponseDTO>> refresh(
+            @CookieValue(name = "refresh_token", required = false) String refreshToken) {
+        return authService.refresh(refreshToken).toEntity();
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<LogoutResponseDTO>> logout(HttpServletRequest request) {
-        return authService.logout(request).toEntity();
+    public ResponseEntity<ApiResponse<LogoutResponseDTO>> logout(
+            @CookieValue(name = "refresh_token", required = false) String refreshToken) {
+        return authService.logout(refreshToken).toEntity();
     }
 
     @GetMapping("/self")
