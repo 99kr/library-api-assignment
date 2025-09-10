@@ -3,6 +3,11 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import { SWRConfig } from 'swr'
 import { useJwt } from '@/hooks/state/useJwt'
 import { getAccessTokenFromRefreshToken } from '@/lib/api'
+import {
+	getRefreshTokenState,
+	hasRefreshTokenState,
+	removeRefreshTokenState,
+} from '@/lib/refreshTokenState'
 import { AccessDenied } from '@/pages/access-denied'
 import { Books } from '@/pages/books'
 import { Home } from '@/pages/home'
@@ -32,9 +37,7 @@ export function App() {
 		if (jwt.accessToken) return
 
 		const handleInitialRefreshTry = async () => {
-			// Possibly keep maxAge of refresh token in localStorage, and log out user if it's expired
-
-			const hasRefreshToken = localStorage.getItem('has_refresh_token')
+			const hasRefreshToken = hasRefreshTokenState()
 			if (!hasRefreshToken) {
 				return jwt.setIdentityAsLoggedOut()
 			}
@@ -42,7 +45,7 @@ export function App() {
 			const accessToken = await getAccessTokenFromRefreshToken()
 			// Refresh token is invalid
 			if (accessToken === null) {
-				localStorage.removeItem('has_refresh_token')
+				removeRefreshTokenState()
 				return jwt.setIdentityAsLoggedOut()
 			}
 
@@ -64,7 +67,7 @@ export function App() {
 				revalidateOnFocus: false,
 				onErrorRetry: async (error, _key, _config, revalidate) => {
 					if (error.status === 401) {
-						const hasRefreshToken = localStorage.getItem('has_refresh_token')
+						const hasRefreshToken = hasRefreshTokenState()
 						if (!hasRefreshToken) {
 							return router.navigate('/login')
 						}
@@ -73,7 +76,7 @@ export function App() {
 						// Refresh token was invalid
 						if (accessToken === null) {
 							jwt.setAccessToken(null)
-							localStorage.removeItem('has_refresh_token')
+							removeRefreshTokenState()
 
 							return router.navigate('/login')
 						}

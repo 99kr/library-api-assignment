@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { useLogin } from '@/hooks/api/useLogin'
 import { useJwt } from '@/hooks/state/useJwt'
+import { setRefreshTokenState } from '@/lib/refreshTokenState'
 
 const formSchema = z.object({
 	email: z.email(),
@@ -50,7 +51,10 @@ export function LoginForm() {
 		jwt.setAccessToken(response.data.accessToken)
 		jwt.setIdentityFromJwtToken(response.data.accessToken)
 
-		localStorage.setItem('has_refresh_token', 'true')
+		setRefreshTokenState({
+			maxAge: response.data.refreshTokenDurationMs,
+			expiresAt: Date.now() + response.data.refreshTokenDurationMs,
+		})
 
 		navigate('/')
 	}

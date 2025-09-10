@@ -82,7 +82,5 @@ export async function getAccessTokenFromRefreshToken() {
 
 	if (json.errors.length > 0) return null
 
-	localStorage.setItem('has_refresh_token', 'true')
-
 	return json.data.accessToken
 }

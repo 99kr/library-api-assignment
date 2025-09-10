@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { useLogout } from '@/hooks/api/useLogout'
 import { useJwt } from '@/hooks/state/useJwt'
+import { removeRefreshTokenState } from '@/lib/refreshTokenState'
 
 export function Logout() {
 	const logout = useLogout()
@@ -18,7 +19,7 @@ export function Logout() {
 		jwtState.setAccessToken(null)
 		jwtState.setIdentityAsLoggedOut()
 
-		localStorage.removeItem('has_refresh_token')
+		removeRefreshTokenState()
 
 		navigate('/')
 	}
