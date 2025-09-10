@@ -1,4 +1,4 @@
 package com.kr.libraryapiassignment.dto.auth;
 
-public record LoginResponseDTO(String accessToken) {
+public record LoginResponseDTO(String accessToken, int refreshTokenDurationMs) {
 }

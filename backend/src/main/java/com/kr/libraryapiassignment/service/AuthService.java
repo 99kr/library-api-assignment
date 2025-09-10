@@ -64,7 +64,9 @@ public class AuthService {
                 jwtUtils.getJwtRefreshExpirationMs()
         );
 
-        return response.addCookie(refreshCookie).setData(new LoginResponseDTO(accessToken));
+        return response
+                .addCookie(refreshCookie)
+                .setData(new LoginResponseDTO(accessToken, jwtUtils.getJwtRefreshExpirationMs()));
     }
 
     public ApiResponse<RefreshResponseDTO> refresh(@Nullable String refreshToken) {
