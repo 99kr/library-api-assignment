@@ -12,51 +12,77 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useLogin } from '@/hooks/api/useLogin'
-import { useJwt } from '@/hooks/state/useJwt'
-import { setRefreshTokenState } from '@/lib/refreshTokenState'
+import { useRegister } from '@/hooks/api/useRegister'
 
-const formSchema = z.object({
-	email: z.email(),
-	password: z.string(),
-})
+const passwordErrorMessage =
+	'Password must be at least 8 characters and contain both a letter and digit'
+
+const formSchema = z
+	.object({
+		firstName: z.string(),
+		lastName: z.string(),
+		email: z.email(),
+		password: z
+			.string()
+			.min(8, passwordErrorMessage)
+			.regex(/^(?=.*[A-z])(?=.*\d).+$/, passwordErrorMessage),
+		confirmPassword: z.string(),
+	})
+	.refine((data) => data.password === data.confirmPassword, {
+		path: ['confirmPassword'],
+		error: 'Passwords do not match',
+	})
 
 type FormSchema = z.infer<typeof formSchema>
 
 const formFields = [
+	{ name: 'firstName', type: 'text', label: 'First name', placeholder: 'John' },
+	{ name: 'lastName', type: 'text', label: 'Last name', placeholder: 'Doe' },
 	{ name: 'email', type: 'email', label: 'Email', placeholder: 'john.doe@mail.com' },
 	{ name: 'password', type: 'password', label: 'Password', placeholder: '••••••••••••' },
+	{
+		name: 'confirmPassword',
+		type: 'password',
+		label: 'Confirm password',
+		placeholder: '••••••••••••',
+	},
 ] as const
 
-export function LoginForm() {
-	const login = useLogin()
-	const jwt = useJwt()
+export function RegisterForm() {
+	const register = useRegister()
 
 	const form = useForm<FormSchema>({
 		resolver: zodResolver(formSchema),
-		defaultValues: { email: '', password: '' },
+		defaultValues: {
+			firstName: '',
+			lastName: '',
+			email: '',
+			password: '',
+			confirmPassword: '',
+		},
 	})
 
 	const navigate = useNavigate()
 
 	async function handleSubmit(data: FormSchema) {
-		const response = await login.trigger(data)
+		const response = await register.trigger({
+			firstName: data.firstName,
+			lastName: data.lastName,
+			email: data.email,
+			password: data.password,
+		})
 
 		if (response.errors.length > 0) {
-			form.setError('email', { message: 'Invalid credentials', type: 'value' })
-			form.setError('password', { message: 'Invalid credentials', type: 'value' })
+			for (const error of response.errors) {
+				form.setError((error.field as any) ?? 'root', {
+					message: error.message,
+					type: 'value',
+				})
+			}
 			return
 		}
 
-		jwt.setAccessToken(response.data.accessToken)
-		jwt.setIdentityFromJwtToken(response.data.accessToken)
-
-		setRefreshTokenState({
-			maxAge: response.data.refreshTokenDurationMs,
-			expiresAt: Date.now() + response.data.refreshTokenDurationMs,
-		})
-
-		navigate('/')
+		navigate('/login')
 	}
 
 	return (
@@ -83,15 +109,15 @@ export function LoginForm() {
 					/>
 				))}
 
-				<Button type='submit' className='w-full' disabled={login.isMutating}>
-					Log in
+				<Button type='submit' className='w-full' disabled={register.isMutating}>
+					Sign up
 				</Button>
 
 				<div className='flex justify-center'>
 					<p>
-						Don't have an account?{' '}
+						Already have an account?{' '}
 						<Button variant='link' asChild className='p-0'>
-							<Link to='/register'>Sign up</Link>
+							<Link to='/login'>Log in</Link>
 						</Button>
 					</p>
 				</div>

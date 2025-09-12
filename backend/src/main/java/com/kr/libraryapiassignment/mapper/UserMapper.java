@@ -3,6 +3,7 @@ package com.kr.libraryapiassignment.mapper;
 import com.kr.libraryapiassignment.dto.user.*;
 import com.kr.libraryapiassignment.entity.Role;
 import com.kr.libraryapiassignment.entity.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -13,10 +14,12 @@ import java.util.Set;
 public class UserMapper {
     private final BookMapper bookMapper;
     private final LoanMapper loanMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserMapper(BookMapper bookMapper, LoanMapper loanMapper) {
+    public UserMapper(BookMapper bookMapper, LoanMapper loanMapper, PasswordEncoder passwordEncoder) {
         this.bookMapper = bookMapper;
         this.loanMapper = loanMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserResponseDTO toDTO(User user) {
@@ -41,7 +44,7 @@ public class UserMapper {
     }
 
     public User toEntity(UserRequestDTO dto) {
-        return new User(null, dto.firstName(), dto.lastName(), dto.email().toLowerCase(), dto.password(),
-                        LocalDateTime.now(), Set.of());
+        return new User(null, dto.firstName(), dto.lastName(), dto.email().toLowerCase(),
+                        passwordEncoder.encode(dto.password()), LocalDateTime.now(), Set.of(new Role(1L, "USER")));
     }
 }

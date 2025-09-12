@@ -1,7 +1,10 @@
 package com.kr.libraryapiassignment.service;
 
 import com.kr.libraryapiassignment.dto.auth.*;
+import com.kr.libraryapiassignment.dto.user.UserRequestDTO;
+import com.kr.libraryapiassignment.dto.user.UserResponseDTO;
 import com.kr.libraryapiassignment.entity.User;
+import com.kr.libraryapiassignment.repository.RoleRepository;
 import com.kr.libraryapiassignment.repository.UserRepository;
 import com.kr.libraryapiassignment.response.ApiResponse;
 import com.kr.libraryapiassignment.security.JwtUtils;
@@ -23,15 +26,17 @@ import java.util.Optional;
 @Service
 public class AuthService {
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
     private final UserDetailsServiceImpl userDetailsService;
     private final RefreshTokenService refreshTokenService;
 
-    public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository,
-                       JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService,
-                       RefreshTokenService refreshTokenService) {
+    public AuthService(AuthenticationManager authenticationManager, UserService userService,
+                       UserRepository userRepository, JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService,
+                       RefreshTokenService refreshTokenService, RoleRepository roleRepository) {
         this.authenticationManager = authenticationManager;
+        this.userService = userService;
         this.userRepository = userRepository;
         this.jwtUtils = jwtUtils;
         this.userDetailsService = userDetailsService;
@@ -108,6 +113,20 @@ public class AuthService {
         refreshTokenService.deleteToken(refreshToken);
 
         return response.setData(new LogoutResponseDTO(true));
+    }
+
+    public ApiResponse<RegisterResponseDTO> register(RegisterRequestDTO dto) {
+        ApiResponse<RegisterResponseDTO> response = new ApiResponse<>();
+
+        ApiResponse<UserResponseDTO> saveResponse = userService.save(
+                new UserRequestDTO(dto.firstName(), dto.lastName(), dto.email(), dto.password()));
+
+        if (saveResponse.hasErrors()) {
+            response = saveResponse.cast(); // Transfer errors etc
+            return response.setData(new RegisterResponseDTO(false));
+        }
+
+        return response.setData(new RegisterResponseDTO(true));
     }
 
     public ApiResponse<SelfResponseDTO> getSelf(Authentication auth) {

@@ -33,6 +33,11 @@ public class AuthController {
         return authService.logout(refreshToken).toEntity();
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<RegisterResponseDTO>> register(@RequestBody RegisterRequestDTO dto) {
+        return authService.register(dto).toEntity();
+    }
+
     @GetMapping("/self")
     public ResponseEntity<ApiResponse<SelfResponseDTO>> self(Authentication auth) {
         return authService.getSelf(auth).toEntity();

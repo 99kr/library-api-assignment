@@ -29,8 +29,9 @@ public class UserController {
         return userService.findUserLoansById(userId).toEntity();
     }
 
+    /*
     @PostMapping
     public ResponseEntity<ApiResponse<UserResponseDTO>> addUser(@RequestBody UserRequestDTO dto) {
         return userService.save(dto).toEntity();
-    }
+    }*/
 }

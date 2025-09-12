@@ -6,6 +6,7 @@ import { Layout } from '@/pages/layout'
 import { Login } from '@/pages/login'
 import { Logout } from '@/pages/logout'
 import { NotFound } from '@/pages/not-found'
+import { Register } from '@/pages/register'
 
 export const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -19,6 +20,7 @@ export const router = createBrowserRouter(
 
 			<Route path='/login' element={<Login />} />
 			<Route path='/logout' element={<Logout />} />
+			<Route path='/register' element={<Register />} />
 		</>,
 	),
 )

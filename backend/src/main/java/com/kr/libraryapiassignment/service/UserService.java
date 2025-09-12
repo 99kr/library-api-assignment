@@ -67,8 +67,11 @@ public class UserService {
         else if (userRepository.existsByEmailIgnoreCase(dto.email()))
             response.addError("email", "A user with email '" + dto.email() + "' already exists.");
 
-        if (dto.password() == null || dto.password().isBlank())
+        if (dto.password() == null || dto.password().isBlank()) {
             response.addError("password", "Missing field 'password'");
+        } else if (dto.password().length() < 8 || !dto.password().matches("^(?=.*[A-z])(?=.*\\d).+$")) {
+            response.addError("password", "Password must be at least 8 characters and contain both a letter and digit");
+        }
 
         if (response.hasErrors())
             return response.setStatusCode(HttpStatus.BAD_REQUEST);

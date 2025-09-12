@@ -27,7 +27,7 @@ public class Role {
     public Role() {
     }
 
-    public Role(Long id, String name, String description) {
+    public Role(Long id, String name) {
         this.id = id;
         this.name = name;
     }
