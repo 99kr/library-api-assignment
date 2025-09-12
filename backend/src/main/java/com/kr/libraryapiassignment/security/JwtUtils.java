@@ -6,12 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 
@@ -76,9 +78,13 @@ public class JwtUtils {
                                     .signWith(getSigningKey(), SignatureAlgorithm.HS512);
 
         if (type == JwtTokenType.ACCESS) {
-            //jwtBuilder.claim("authorities", authentication.getAuthorities());
+            List<String> roles = userPrincipal.getAuthorities().stream()
+                                              .filter(authority -> authority.getAuthority().contains("ROLE_"))
+                                              .map(role -> role.getAuthority().replace("ROLE_", ""))
+                                              .toList();
+
             jwtBuilder.addClaims(Map.of(
-                    "authorities", userPrincipal.getAuthorities(),
+                    "roles", roles,
                     "firstName", userPrincipal.getFirstName(),
                     "lastName", userPrincipal.getLastName()
             ));

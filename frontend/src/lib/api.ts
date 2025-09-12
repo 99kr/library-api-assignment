@@ -6,7 +6,7 @@ import { useJwt } from '@/hooks/state/useJwt'
 const API_URL = 'http://localhost:8765/api/v1'
 
 export type BaseResponse<T = unknown> = {
-	errors: { field: string; message: string }[]
+	errors: { field?: string; message: string }[]
 	data: T
 }
 
@@ -70,6 +70,8 @@ function throwAppropiateError(status: number) {
 	}
 }
 
+type RefreshResponse = BaseResponse<{ accessToken: string }>
+
 export async function getAccessTokenFromRefreshToken() {
 	const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
 		method: 'POST',
@@ -78,7 +80,7 @@ export async function getAccessTokenFromRefreshToken() {
 
 	if (!refreshResponse.ok) return null
 
-	const json = await refreshResponse.json()
+	const json: RefreshResponse = await refreshResponse.json()
 
 	if (json.errors.length > 0) return null
 

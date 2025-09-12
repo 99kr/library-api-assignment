@@ -1,29 +1,30 @@
-import { BookText, LogOut, SunMoon, SwatchBook } from 'lucide-react'
+import { BookText, FlaskConical, LogOut, SunMoon, SwatchBook } from 'lucide-react'
 import { Link, useLocation } from 'react-router'
+import { AppSidebarGroup, type Group } from '@/components/sidebar/app-sidebar-group'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-	Sidebar,
-	SidebarContent,
-	SidebarFooter,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarGroupLabel,
-	SidebarHeader,
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-} from '@/components/ui/sidebar'
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar'
 import { useJwt } from '@/hooks/state/useJwt'
 import { useTheme } from '@/hooks/state/useTheme'
 import { cn } from '@/lib/utils'
 
-const items = [{ name: 'Books', href: '/books', icon: BookText }]
+const groups: Group[] = [
+	{
+		name: 'Application',
+		role: 'USER',
+		items: [{ name: 'Books', href: '/books', icon: BookText }],
+	},
+	{
+		name: 'Administration',
+		role: 'ADMIN',
+		items: [{ name: 'Test', href: '/test', icon: FlaskConical }],
+	},
+]
 
 export function AppSidebar() {
 	const location = useLocation()
 	const toggleTheme = useTheme((state) => state.toggleTheme)
-	const identity = useJwt((state) => state.identity)
+	const { identity, ...jwt } = useJwt()
 
 	return (
 		<Sidebar variant='floating'>
@@ -37,26 +38,9 @@ export function AppSidebar() {
 				</Button>
 			</SidebarHeader>
 			<SidebarContent>
-				<SidebarGroup>
-					<SidebarGroupLabel>User</SidebarGroupLabel>
-					<SidebarGroupContent>
-						<SidebarMenu>
-							{items.map((item) => (
-								<SidebarMenuItem key={item.name}>
-									<SidebarMenuButton
-										asChild
-										isActive={location.pathname === item.href}
-									>
-										<Link to={item.href}>
-											<item.icon className='size-4' />
-											<span>{item.name}</span>
-										</Link>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
-						</SidebarMenu>
-					</SidebarGroupContent>
-				</SidebarGroup>
+				{groups.map((group) => (
+					<AppSidebarGroup group={group} key={group.name} />
+				))}
 			</SidebarContent>
 			<SidebarFooter
 				className={cn(
@@ -71,8 +55,8 @@ export function AppSidebar() {
 				) : (
 					<div className='flex gap-2 items-center justify-between p-2'>
 						<div className='flex flex-col'>
-							<Badge variant='secondary' className='mb-1'>
-								Role
+							<Badge variant='secondary' className='mb-1 capitalize'>
+								{jwt.getMostPrivilegedRole().toLowerCase()}
 							</Badge>
 							<p className='font-medium'>
 								{identity.firstName} {identity.lastName}

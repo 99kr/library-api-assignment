@@ -1,34 +1,10 @@
 import { useEffect } from 'react'
-import { createBrowserRouter, RouterProvider } from 'react-router'
+import { RouterProvider } from 'react-router'
 import { SWRConfig } from 'swr'
 import { useJwt } from '@/hooks/state/useJwt'
 import { getAccessTokenFromRefreshToken } from '@/lib/api'
-import {
-	getRefreshTokenState,
-	hasRefreshTokenState,
-	removeRefreshTokenState,
-} from '@/lib/refreshTokenState'
-import { AccessDenied } from '@/pages/access-denied'
-import { Books } from '@/pages/books'
-import { Home } from '@/pages/home'
-import { Layout } from '@/pages/layout'
-import { Login } from '@/pages/login'
-import { Logout } from '@/pages/logout'
-import { NotFound } from '@/pages/not-found'
-
-export const router = createBrowserRouter([
-	{
-		element: <Layout />,
-		children: [
-			{ path: '/', element: <Home /> },
-			{ path: '/books', element: <Books /> },
-			{ path: '/denied', element: <AccessDenied /> },
-			{ path: '*', element: <NotFound /> },
-		],
-	},
-	{ path: '/login', element: <Login /> },
-	{ path: '/logout', element: <Logout /> },
-])
+import { hasRefreshTokenState, removeRefreshTokenState } from '@/lib/refreshTokenState'
+import { router } from '@/router'
 
 export function App() {
 	const jwt = useJwt()
