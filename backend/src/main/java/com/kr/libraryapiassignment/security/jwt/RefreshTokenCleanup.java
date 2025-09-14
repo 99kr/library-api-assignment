@@ -1,4 +1,4 @@
-package com.kr.libraryapiassignment.security;
+package com.kr.libraryapiassignment.security.jwt;
 
 import com.kr.libraryapiassignment.service.RefreshTokenService;
 import org.slf4j.Logger;

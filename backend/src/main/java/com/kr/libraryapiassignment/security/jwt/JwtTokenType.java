@@ -1,4 +1,4 @@
-package com.kr.libraryapiassignment.security;
+package com.kr.libraryapiassignment.security.jwt;
 
 public enum JwtTokenType {
     ACCESS,

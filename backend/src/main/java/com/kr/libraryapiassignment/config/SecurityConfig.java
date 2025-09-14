@@ -1,8 +1,8 @@
 package com.kr.libraryapiassignment.config;
 
-import com.kr.libraryapiassignment.security.AuthAccessDeniedHandler;
-import com.kr.libraryapiassignment.security.AuthEntryPointJwt;
-import com.kr.libraryapiassignment.security.AuthTokenFilter;
+import com.kr.libraryapiassignment.security.auth.AuthAccessDeniedHandler;
+import com.kr.libraryapiassignment.security.auth.AuthEntryPointJwt;
+import com.kr.libraryapiassignment.security.auth.AuthTokenFilter;
 import com.kr.libraryapiassignment.security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

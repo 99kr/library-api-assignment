@@ -48,6 +48,8 @@ const formFields = [
 	},
 ] as const
 
+type FormFieldName = (typeof formFields)[number]['name']
+
 export function RegisterForm() {
 	const register = useRegister()
 
@@ -74,7 +76,7 @@ export function RegisterForm() {
 
 		if (response.errors.length > 0) {
 			for (const error of response.errors) {
-				form.setError((error.field as any) ?? 'root', {
+				form.setError((error.field as FormFieldName) ?? 'root', {
 					message: error.message,
 					type: 'value',
 				})

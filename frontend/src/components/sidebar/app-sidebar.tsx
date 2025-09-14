@@ -1,4 +1,4 @@
-import { BookText, FlaskConical, LogOut, SunMoon, SwatchBook } from 'lucide-react'
+import { BookText, LogOut, ScrollText, SunMoon, SwatchBook } from 'lucide-react'
 import { Link, useLocation } from 'react-router'
 import { AppSidebarGroup, type Group } from '@/components/sidebar/app-sidebar-group'
 import { Badge } from '@/components/ui/badge'
@@ -17,7 +17,7 @@ const groups: Group[] = [
 	{
 		name: 'Administration',
 		role: 'ADMIN',
-		items: [{ name: 'Test', href: '/test', icon: FlaskConical }],
+		items: [{ name: 'Audit logs', href: '/logs', icon: ScrollText }],
 	},
 ]
 

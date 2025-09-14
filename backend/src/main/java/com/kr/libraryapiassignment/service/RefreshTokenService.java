@@ -2,7 +2,7 @@ package com.kr.libraryapiassignment.service;
 
 import com.kr.libraryapiassignment.entity.RefreshToken;
 import com.kr.libraryapiassignment.repository.RefreshTokenRepository;
-import com.kr.libraryapiassignment.security.RefreshTokenStatus;
+import com.kr.libraryapiassignment.security.jwt.RefreshTokenStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

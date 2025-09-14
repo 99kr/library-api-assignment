@@ -1,6 +1,7 @@
 package com.kr.libraryapiassignment.controller;
 
 import com.kr.libraryapiassignment.response.ApiResponse;
+import com.kr.libraryapiassignment.security.audit.AuditLogger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    private final AuditLogger auditLogger;
+
+    public GlobalExceptionHandler(AuditLogger auditLogger) {
+        this.auditLogger = auditLogger;
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public void handleAccessDeniedException(AccessDeniedException exception) throws AccessDeniedException {

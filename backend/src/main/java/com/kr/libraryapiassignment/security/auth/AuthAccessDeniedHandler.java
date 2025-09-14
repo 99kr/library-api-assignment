@@ -1,4 +1,4 @@
-package com.kr.libraryapiassignment.security;
+package com.kr.libraryapiassignment.security.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kr.libraryapiassignment.response.ApiResponse;

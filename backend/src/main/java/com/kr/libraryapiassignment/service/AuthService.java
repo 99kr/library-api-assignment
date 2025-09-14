@@ -7,8 +7,10 @@ import com.kr.libraryapiassignment.entity.User;
 import com.kr.libraryapiassignment.repository.RoleRepository;
 import com.kr.libraryapiassignment.repository.UserRepository;
 import com.kr.libraryapiassignment.response.ApiResponse;
-import com.kr.libraryapiassignment.security.JwtUtils;
-import com.kr.libraryapiassignment.security.RefreshTokenStatus;
+import com.kr.libraryapiassignment.security.audit.AuditLogAction;
+import com.kr.libraryapiassignment.security.audit.AuditLogger;
+import com.kr.libraryapiassignment.security.jwt.JwtUtils;
+import com.kr.libraryapiassignment.security.jwt.RefreshTokenStatus;
 import com.kr.libraryapiassignment.security.UserDetailsServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -31,47 +33,58 @@ public class AuthService {
     private final JwtUtils jwtUtils;
     private final UserDetailsServiceImpl userDetailsService;
     private final RefreshTokenService refreshTokenService;
+    private final AuditLogger auditLogger;
 
     public AuthService(AuthenticationManager authenticationManager, UserService userService,
                        UserRepository userRepository, JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService,
-                       RefreshTokenService refreshTokenService, RoleRepository roleRepository) {
+                       RefreshTokenService refreshTokenService, AuditLogger auditLogger) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.userRepository = userRepository;
         this.jwtUtils = jwtUtils;
         this.userDetailsService = userDetailsService;
         this.refreshTokenService = refreshTokenService;
+        this.auditLogger = auditLogger;
     }
 
     public ApiResponse<LoginResponseDTO> login(LoginRequestDTO dto) {
         ApiResponse<LoginResponseDTO> response = new ApiResponse<>();
 
-        UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken(dto.email(), dto.password());
+        try {
+            UsernamePasswordAuthenticationToken token =
+                    new UsernamePasswordAuthenticationToken(dto.email(), dto.password());
 
-        Authentication auth = authenticationManager.authenticate(token);
+            Authentication auth = authenticationManager.authenticate(token);
 
-        SecurityContextHolder.getContext().setAuthentication(auth);
+            SecurityContextHolder.getContext().setAuthentication(auth);
 
-        String accessToken = jwtUtils.generateAccessToken(auth);
-        String refreshToken = jwtUtils.generateRefreshToken(auth);
+            String accessToken = jwtUtils.generateAccessToken(auth);
+            String refreshToken = jwtUtils.generateRefreshToken(auth);
 
-        ResponseCookie refreshCookie = ResponseCookie
-                .from("refresh_token", refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
-                .maxAge(Duration.ofMillis(jwtUtils.getJwtRefreshExpirationMs()))
-                .build();
+            ResponseCookie refreshCookie = ResponseCookie
+                    .from("refresh_token", refreshToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("Strict")
+                    .maxAge(Duration.ofMillis(jwtUtils.getJwtRefreshExpirationMs()))
+                    .build();
 
-        refreshTokenService.saveToken(
-                refreshToken,
-                jwtUtils.getJwtRefreshExpirationMs()
-        );
+            refreshTokenService.saveToken(
+                    refreshToken,
+                    jwtUtils.getJwtRefreshExpirationMs()
+            );
 
-        return response
-                .addCookie(refreshCookie)
-                .setData(new LoginResponseDTO(accessToken, jwtUtils.getJwtRefreshExpirationMs()));
+            auditLogger.log(dto.email(), AuditLogAction.LOGIN, "/auth/login");
+
+            return response
+                    .addCookie(refreshCookie)
+                    .setData(new LoginResponseDTO(accessToken, jwtUtils.getJwtRefreshExpirationMs()));
+            
+        } catch (Exception e) {
+            auditLogger.log(dto.email(), AuditLogAction.FAILED_LOGIN, "/auth/login");
+
+            return response.addError("Bad credentials").setStatusCode(HttpStatus.BAD_REQUEST);
+        }
     }
 
     public ApiResponse<RefreshResponseDTO> refresh(@Nullable String refreshToken) {
@@ -110,7 +123,11 @@ public class AuthService {
             return response.setData(new LogoutResponseDTO(false)).setStatusCode(HttpStatus.BAD_REQUEST);
         }
 
+        String email = jwtUtils.getUsernameFromToken(refreshToken);
+
         refreshTokenService.deleteToken(refreshToken);
+
+        auditLogger.log(email, AuditLogAction.LOGOUT, "/auth/logout");
 
         return response.setData(new LogoutResponseDTO(true));
     }
@@ -123,8 +140,13 @@ public class AuthService {
 
         if (saveResponse.hasErrors()) {
             response = saveResponse.cast(); // Transfer errors etc
+
+            auditLogger.log(dto.email(), AuditLogAction.FAILED_REGISTER, "/auth/register");
+
             return response.setData(new RegisterResponseDTO(false));
         }
+
+        auditLogger.log(dto.email(), AuditLogAction.REGISTER, "/auth/register");
 
         return response.setData(new RegisterResponseDTO(true));
     }

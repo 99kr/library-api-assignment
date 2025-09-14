@@ -1,13 +1,12 @@
-package com.kr.libraryapiassignment.security;
+package com.kr.libraryapiassignment.security.jwt;
 
+import com.kr.libraryapiassignment.security.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -59,7 +58,7 @@ public class JwtUtils {
         return JwtTokenType.valueOf(type);
     }
 
-    private Claims getAllClaimsFromToken(String token) {
+    public Claims getAllClaimsFromToken(String token) {
         return Jwts.parserBuilder()
                    .setSigningKey(getSigningKey())
                    .build()
