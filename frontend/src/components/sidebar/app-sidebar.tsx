@@ -1,6 +1,7 @@
-import { BookText, LogOut, ScrollText, SunMoon, SwatchBook } from 'lucide-react'
-import { Link, useLocation } from 'react-router'
+import { BookText, ScrollText, SunMoon, SwatchBook } from 'lucide-react'
+import { Link } from 'react-router'
 import { AppSidebarGroup, type Group } from '@/components/sidebar/app-sidebar-group'
+import { ProfileDropdown } from '@/components/sidebar/profile-dropdown'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar'
@@ -20,7 +21,6 @@ const groups: Group[] = [
 ]
 
 export function AppSidebar() {
-	const location = useLocation()
 	const toggleTheme = useTheme((state) => state.toggleTheme)
 	const { identity, ...jwt } = useJwt()
 
@@ -36,8 +36,8 @@ export function AppSidebar() {
 				</Button>
 			</SidebarHeader>
 			<SidebarContent>
-				{groups.map((group) => (
-					<AppSidebarGroup group={group} key={group.name} />
+				{groups.map((group, i) => (
+					<AppSidebarGroup group={group} key={group.name ?? i} />
 				))}
 			</SidebarContent>
 			<SidebarFooter
@@ -51,23 +51,19 @@ export function AppSidebar() {
 						<Link to='/login'>Log in</Link>
 					</Button>
 				) : (
-					<div className='flex gap-2 items-center justify-between p-2'>
-						<div className='flex flex-col'>
-							<Badge variant='secondary' className='mb-1 capitalize'>
-								{jwt.getMostPrivilegedRole().toLowerCase()}
-							</Badge>
-							<p className='font-medium'>
-								{identity.firstName} {identity.lastName}
-							</p>
-							<p className='text-sm text-base-400'>{identity.email}</p>
+					<ProfileDropdown>
+						<div className='flex gap-2 items-center justify-between p-2 rounded-xl border border-transparent hover:cursor-pointer hover:bg-background/30 hover:border-inherit transition-colors duration-100'>
+							<div className='flex flex-col'>
+								<Badge variant='secondary' className='mb-1 capitalize'>
+									{jwt.getMostPrivilegedRole().toLowerCase()}
+								</Badge>
+								<p className='font-medium'>
+									{identity.firstName} {identity.lastName}
+								</p>
+								<p className='text-sm text-base-400'>{identity.email}</p>
+							</div>
 						</div>
-
-						<Button variant='ghost' size='icon' asChild>
-							<Link to={`/logout?from=${location.pathname}`}>
-								<LogOut className='h-4 w-4' />
-							</Link>
-						</Button>
-					</div>
+					</ProfileDropdown>
 				)}
 			</SidebarFooter>
 		</Sidebar>
