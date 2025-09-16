@@ -8,13 +8,13 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from '@/components/ui/pagination'
-import { useBooksDetailed } from '@/hooks/api/books/useBooksDetailed'
+import { useBooksDetailedQuery } from '@/hooks/api/books/useBooksDetailedQuery'
 import { cn } from '@/lib/utils'
 
 export function Books() {
 	const [params, setParams] = useSearchParams()
 	const page = Number(params.get('page') ?? 1) - 1
-	const { data } = useBooksDetailed(page)
+	const { data } = useBooksDetailedQuery(page)
 
 	if (!data) return null
 

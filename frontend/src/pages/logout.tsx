@@ -1,12 +1,12 @@
 import { Link, useNavigate, useSearchParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { useLogout } from '@/hooks/api/auth/useLogout'
+import { useLogoutMutation } from '@/hooks/api/auth/useLogoutMutation'
 import { useJwt } from '@/hooks/state/useJwt'
 import { removeRefreshTokenState } from '@/lib/refreshTokenState'
 
 export function Logout() {
-	const logout = useLogout()
+	const logout = useLogoutMutation()
 	const navigate = useNavigate()
 	const [params] = useSearchParams()
 

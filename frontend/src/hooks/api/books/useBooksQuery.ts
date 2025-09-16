@@ -8,13 +8,6 @@ type BooksResponse = BaseResponse<{
 		publicationYear: number
 		availableCopies: number
 		totalCopies: number
-		author: {
-			id: number
-			firstName: string
-			lastName: string
-			birthYear: number
-			nationality: string
-		}
 	}[]
 	pageable: {
 		totalPages: number
@@ -28,6 +21,6 @@ type BooksResponse = BaseResponse<{
 	}
 }>
 
-export function useBooksDetailed(page: number) {
-	return useSWR<BooksResponse>(`/books/detailed?page=${page}`, getRequest)
+export function useBooksQuery(page: number) {
+	return useSWR<BooksResponse>(`/books?page=${page}`, getRequest)
 }

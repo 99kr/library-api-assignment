@@ -11,6 +11,6 @@ type LogsResponse = BaseResponse<
 	}[]
 >
 
-export function useLogs() {
+export function useLogsQuery() {
 	return useSWR<LogsResponse>('/logs', getRequest)
 }

@@ -6,10 +6,10 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table'
-import { useLogs } from '@/hooks/api/useLogs'
+import { useLogsQuery } from '@/hooks/api/useLogsQuery'
 
 export function Logs() {
-	const { data: logs } = useLogs()
+	const { data: logs } = useLogsQuery()
 
 	if (!logs) return null
 

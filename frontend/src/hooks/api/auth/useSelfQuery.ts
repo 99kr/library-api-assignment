@@ -13,6 +13,6 @@ export const loggedOutState: SelfResponse = {
 	errors: [],
 }
 
-export function useSelf() {
+export function useSelfMutation() {
 	return useSWR<SelfResponse>('/auth/self', getRequest)
 }

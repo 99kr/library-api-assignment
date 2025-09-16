@@ -4,7 +4,7 @@ import { type BaseResponse, postRequest } from '@/lib/api'
 type RegisterResponse = BaseResponse<{ success: boolean }>
 type RegisterRequest = { firstName: string; lastName: string; email: string; password: string }
 
-export function useRegister() {
+export function useRegisterMutation() {
 	return useSWRMutation<RegisterResponse, unknown, string, RegisterRequest>(
 		'/auth/register',
 		postRequest,
