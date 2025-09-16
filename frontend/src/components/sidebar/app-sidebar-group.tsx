@@ -12,7 +12,7 @@ import { type Role, useJwt } from '@/hooks/state/useJwt'
 
 export type Group = {
 	name: string
-	role: Role
+	role: Role | null
 	items: {
 		name: string
 		href: string
@@ -21,10 +21,10 @@ export type Group = {
 }
 
 export function AppSidebarGroup({ group }: { group: Group }) {
-	const hasRole = useJwt((state) => state.hasRole(group.role))
+	const hasRole = useJwt((state) => state.hasRole)
 	const location = useLocation()
 
-	if (!hasRole) return null
+	if (group.role && !hasRole(group.role)) return null
 
 	return (
 		<SidebarGroup>

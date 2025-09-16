@@ -11,6 +11,7 @@ import com.kr.libraryapiassignment.specification.BookSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -32,21 +33,11 @@ public class BookService {
 
     public ApiResponse<BookPageableResponseDTO> findAll(BookPageableRequestDTO dto) {
         ApiResponse<BookPageableResponseDTO> response = new ApiResponse<>();
+        
+        PageRequest pageRequest = buildPageRequest(dto);
+        Specification<Book> bookSpec = BookSpecification.filter(dto);
 
-        int pageNum = dto.pageNumber().orElse(0);
-        int pageSize = 20;
-
-        Sort.Direction direction = Sort.Direction
-                .fromOptionalString(dto.sortOrder().orElse("asc"))
-                .orElse(Sort.Direction.ASC);
-
-        Set<String> validSortFields = Set.of("id", "title", "publicationYear", "availableCopies", "totalCopies");
-        String sortBy = dto.sortBy().filter(validSortFields::contains).orElse("id");
-
-        Sort sort = Sort.by(direction, sortBy);
-
-        PageRequest pageRequest = PageRequest.of(pageNum, pageSize, sort);
-        Page<Book> pageBooks = bookRepository.findAll(BookSpecification.filter(dto), pageRequest);
+        Page<Book> pageBooks = bookRepository.findAll(bookSpec, pageRequest);
 
         return response.setData(bookMapper.toDTOPageable(pageBooks));
     }
@@ -103,5 +94,21 @@ public class BookService {
         Book book = bookRepository.save(bookMapper.toEntity(dto));
 
         return response.setData(bookMapper.toDTO(book)).setStatusCode(HttpStatus.CREATED);
+    }
+
+    private PageRequest buildPageRequest(BookPageableRequestDTO dto) {
+        int pageNum = dto.page().orElse(0);
+        int pageSize = 20;
+
+        Sort.Direction direction = Sort.Direction
+                .fromOptionalString(dto.sortOrder().orElse("asc"))
+                .orElse(Sort.Direction.ASC);
+
+        Set<String> validSortFields = Set.of("id", "title", "publicationYear", "availableCopies", "totalCopies");
+        String sortBy = dto.sortBy().filter(validSortFields::contains).orElse("id");
+
+        Sort sort = Sort.by(direction, sortBy);
+
+        return PageRequest.of(pageNum, pageSize, sort);
     }
 }

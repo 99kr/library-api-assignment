@@ -3,7 +3,7 @@ package com.kr.libraryapiassignment.dto.book;
 import java.util.Optional;
 
 public record BookPageableRequestDTO(
-        Optional<Integer> pageNumber,
+        Optional<Integer> page,
         Optional<String> sortOrder,
         Optional<String> sortBy,
         Optional<Boolean> available,

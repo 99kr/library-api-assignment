@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 const groups: Group[] = [
 	{
 		name: 'Application',
-		role: 'USER',
+		role: null,
 		items: [{ name: 'Books', href: '/books', icon: BookText }],
 	},
 	{
