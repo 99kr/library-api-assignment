@@ -33,7 +33,7 @@ public class BookService {
 
     public ApiResponse<BookPageableResponseDTO> findAll(BookPageableRequestDTO dto) {
         ApiResponse<BookPageableResponseDTO> response = new ApiResponse<>();
-        
+
         PageRequest pageRequest = buildPageRequest(dto);
         Specification<Book> bookSpec = BookSpecification.filter(dto);
 
@@ -60,12 +60,15 @@ public class BookService {
         return response.setData(bookMapper.toDTODetailed(books));
     }
 
-    public ApiResponse<List<BookDetailedResponseDTO>> findAllDetailed() {
-        ApiResponse<List<BookDetailedResponseDTO>> response = new ApiResponse<>();
+    public ApiResponse<BookDetailedPageableResponseDTO> findAllDetailed(BookPageableRequestDTO dto) {
+        ApiResponse<BookDetailedPageableResponseDTO> response = new ApiResponse<>();
 
-        List<BookDetailedTransientDTO> books = bookRepository.findDetailed();
+        PageRequest pageRequest = buildPageRequest(dto);
+        Specification<Book> bookSpec = BookSpecification.filter(dto);
 
-        return response.setData(bookMapper.toDTODetailed(books));
+        Page<BookDetailedTransientDTO> books = bookRepository.findDetailed(bookSpec, pageRequest);
+
+        return response.setData(bookMapper.toDTODetailedPageable(books));
     }
 
     public ApiResponse<BookResponseDTO> findById(Long id) throws BookNotFoundException {

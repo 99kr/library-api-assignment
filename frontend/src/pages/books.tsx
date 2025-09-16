@@ -13,11 +13,13 @@ import { cn } from '@/lib/utils'
 export function Books() {
 	const [params, setParams] = useSearchParams()
 	const page = Number(params.get('page') ?? 1) - 1
-	const { data: books } = useBooks(page)
+	const { data } = useBooks(page)
 
-	if (!books) return null
+	if (!data) return null
 
-	const totalPages = books?.data.totalPages ?? 1
+	const { content: books, pageable } = data.data
+
+	const totalPages = pageable.totalPages ?? 1
 
 	function setPage(pageNumber: number) {
 		if (pageNumber < 0 || pageNumber > totalPages - 1) return
@@ -36,11 +38,11 @@ export function Books() {
 		<>
 			<h1 className='text-4xl font-semibold'>Books</h1>
 			<p>
-				Showing {books?.data.numberOfElements} books out of {books?.data.totalElements}
+				Showing {pageable.numberOfElements} books out of {pageable.totalElements}
 			</p>
 
 			<div className='grid grid-cols-4 gap-4 mt-4'>
-				{books?.data.content.map((book) => (
+				{books.map((book) => (
 					<div
 						key={book.id}
 						className='bg-card text-card-foreground px-4 py-2 rounded-[var(--radius)]'
@@ -60,9 +62,9 @@ export function Books() {
 					<PaginationItem>
 						<PaginationPrevious
 							onClick={previousPage}
-							aria-disabled={!books?.data.hasPrevious}
+							aria-disabled={!pageable.hasPrevious}
 							className={cn(
-								!books?.data.hasPrevious && 'pointer-events-none opacity-50',
+								!pageable.hasPrevious && 'pointer-events-none opacity-50',
 							)}
 						/>
 					</PaginationItem>
@@ -78,8 +80,8 @@ export function Books() {
 					<PaginationItem>
 						<PaginationNext
 							onClick={nextPage}
-							aria-disabled={!books?.data.hasNext}
-							className={cn(!books?.data.hasNext && 'pointer-events-none opacity-50')}
+							aria-disabled={!pageable.hasNext}
+							className={cn(!pageable.hasNext && 'pointer-events-none opacity-50')}
 						/>
 					</PaginationItem>
 				</PaginationContent>

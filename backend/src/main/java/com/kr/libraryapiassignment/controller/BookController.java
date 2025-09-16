@@ -24,15 +24,12 @@ public class BookController {
     // GET /api/v1/books?page=0&sortOrder=desc&sortBy=title&available=true&yearFrom=1990&yearTo=1997
     @GetMapping
     public ResponseEntity<ApiResponse<BookPageableResponseDTO>> getAll(BookPageableRequestDTO dto) {
-
-        return bookService
-                .findAll(dto)
-                .toEntity();
+        return bookService.findAll(dto).toEntity();
     }
 
     @GetMapping("/detailed")
-    public ResponseEntity<ApiResponse<List<BookDetailedResponseDTO>>> getAllDetailed() {
-        return bookService.findAllDetailed().toEntity();
+    public ResponseEntity<ApiResponse<BookDetailedPageableResponseDTO>> getAllDetailed(BookPageableRequestDTO dto) {
+        return bookService.findAllDetailed(dto).toEntity();
     }
 
     @GetMapping("/{id}")

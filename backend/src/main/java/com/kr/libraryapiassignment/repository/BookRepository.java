@@ -2,6 +2,10 @@ package com.kr.libraryapiassignment.repository;
 
 import com.kr.libraryapiassignment.dto.book.BookDetailedTransientDTO;
 import com.kr.libraryapiassignment.entity.Book;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +21,7 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
             SELECT new com.kr.libraryapiassignment.dto.book.BookDetailedTransientDTO(b, a)
             FROM Book b JOIN Author a on a.id = b.authorId
             """)
-    List<BookDetailedTransientDTO> findDetailed();
+    Page<BookDetailedTransientDTO> findDetailed(Specification<Book> spec, Pageable pageable);
 
     @Query("""
             SELECT new com.kr.libraryapiassignment.dto.book.BookDetailedTransientDTO(b, a)

@@ -9,14 +9,16 @@ type BooksResponse = BaseResponse<{
 		availableCopies: number
 		totalCopies: number
 	}[]
-	totalPages: number
-	totalElements: number
-	numberOfElements: number
-	size: number
-	last: boolean
-	first: boolean
-	hasPrevious: boolean
-	hasNext: boolean
+	pageable: {
+		totalPages: number
+		totalElements: number
+		numberOfElements: number
+		size: number
+		last: boolean
+		first: boolean
+		hasPrevious: boolean
+		hasNext: boolean
+	}
 }>
 
 export function useBooks(page: number) {

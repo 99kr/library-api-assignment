@@ -43,10 +43,19 @@ public class BookMapper {
     public BookPageableResponseDTO toDTOPageable(Page<Book> page) {
         return new BookPageableResponseDTO(
                 toDTO(page.getContent()),
-                page.getTotalPages(), page.getTotalElements(),
-                page.getNumberOfElements(), page.getSize(),
-                page.isLast(), page.isFirst(),
-                page.hasPrevious(), page.hasNext());
+                new PageableResponse(page.getTotalPages(), page.getTotalElements(),
+                                     page.getNumberOfElements(), page.getSize(),
+                                     page.isLast(), page.isFirst(),
+                                     page.hasPrevious(), page.hasNext()));
+    }
+
+    public BookDetailedPageableResponseDTO toDTODetailedPageable(Page<BookDetailedTransientDTO> page) {
+        return new BookDetailedPageableResponseDTO(
+                toDTODetailed(page.getContent()),
+                new PageableResponse(page.getTotalPages(), page.getTotalElements(),
+                                     page.getNumberOfElements(), page.getSize(),
+                                     page.isLast(), page.isFirst(),
+                                     page.hasPrevious(), page.hasNext()));
     }
 
     public Book toEntity(BookRequestDTO dto) {
