@@ -4,7 +4,6 @@ import com.kr.libraryapiassignment.dto.auth.*;
 import com.kr.libraryapiassignment.response.ApiResponse;
 import com.kr.libraryapiassignment.service.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,10 +35,5 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<RegisterResponseDTO>> register(@RequestBody RegisterRequestDTO dto) {
         return authService.register(dto).toEntity();
-    }
-
-    @GetMapping("/self")
-    public ResponseEntity<ApiResponse<SelfResponseDTO>> self(Authentication auth) {
-        return authService.getSelf(auth).toEntity();
     }
 }

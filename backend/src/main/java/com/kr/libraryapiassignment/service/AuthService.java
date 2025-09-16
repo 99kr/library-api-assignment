@@ -3,8 +3,6 @@ package com.kr.libraryapiassignment.service;
 import com.kr.libraryapiassignment.dto.auth.*;
 import com.kr.libraryapiassignment.dto.user.UserRequestDTO;
 import com.kr.libraryapiassignment.dto.user.UserResponseDTO;
-import com.kr.libraryapiassignment.entity.User;
-import com.kr.libraryapiassignment.repository.RoleRepository;
 import com.kr.libraryapiassignment.repository.UserRepository;
 import com.kr.libraryapiassignment.response.ApiResponse;
 import com.kr.libraryapiassignment.security.audit.AuditLogAction;
@@ -23,7 +21,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -79,7 +76,7 @@ public class AuthService {
             return response
                     .addCookie(refreshCookie)
                     .setData(new LoginResponseDTO(accessToken, jwtUtils.getJwtRefreshExpirationMs()));
-            
+
         } catch (Exception e) {
             auditLogger.log(dto.email(), AuditLogAction.FAILED_LOGIN, "/auth/login");
 
@@ -149,24 +146,5 @@ public class AuthService {
         auditLogger.log(dto.email(), AuditLogAction.REGISTER, "/auth/register");
 
         return response.setData(new RegisterResponseDTO(true));
-    }
-
-    public ApiResponse<SelfResponseDTO> getSelf(Authentication auth) {
-        ApiResponse<SelfResponseDTO> response = new ApiResponse<>();
-
-        if (auth == null) {
-            return response.setData(new SelfResponseDTO(false));
-        }
-
-        Optional<User> optUser = userRepository.findByEmailIgnoreCase(auth.getName());
-
-        if (optUser.isEmpty()) {
-            return response.setData(new SelfResponseDTO(false));
-        }
-
-        User user = optUser.get();
-
-        return response
-                .setData(new SelfResponseDTO(user.getFirstName(), user.getLastName(), user.getEmail(), true));
     }
 }
