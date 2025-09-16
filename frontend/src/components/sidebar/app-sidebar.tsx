@@ -10,8 +10,6 @@ import { cn } from '@/lib/utils'
 
 const groups: Group[] = [
 	{
-		name: 'Application',
-		role: null,
 		items: [{ name: 'Books', href: '/books', icon: BookText }],
 	},
 	{

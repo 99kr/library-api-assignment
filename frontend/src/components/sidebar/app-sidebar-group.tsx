@@ -11,8 +11,8 @@ import {
 import { type Role, useJwt } from '@/hooks/state/useJwt'
 
 export type Group = {
-	name: string
-	role: Role | null
+	name?: string
+	role?: Role
 	items: {
 		name: string
 		href: string
@@ -28,7 +28,7 @@ export function AppSidebarGroup({ group }: { group: Group }) {
 
 	return (
 		<SidebarGroup>
-			<SidebarGroupLabel>{group.name}</SidebarGroupLabel>
+			{group.name && <SidebarGroupLabel>{group.name}</SidebarGroupLabel>}
 			<SidebarGroupContent>
 				<SidebarMenu>
 					{group.items.map((item) => (

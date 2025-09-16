@@ -1,5 +1,4 @@
-import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
-import { useJwt } from '@/hooks/state/useJwt'
+import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router'
 import { AccessDenied } from '@/pages/access-denied'
 import { Books } from '@/pages/books'
 import { Home } from '@/pages/home'
