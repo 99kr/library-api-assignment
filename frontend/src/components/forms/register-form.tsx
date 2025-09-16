@@ -12,7 +12,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useRegister } from '@/hooks/api/useRegister'
+import { useRegister } from '@/hooks/api/auth/useRegister'
 
 const passwordErrorMessage =
 	'Password must be at least 8 characters and contain both a letter and digit'

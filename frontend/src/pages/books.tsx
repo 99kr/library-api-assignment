@@ -1,4 +1,5 @@
 import { useSearchParams } from 'react-router'
+import { Badge } from '@/components/ui/badge'
 import {
 	Pagination,
 	PaginationContent,
@@ -7,13 +8,13 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from '@/components/ui/pagination'
-import { useBooks } from '@/hooks/api/useBooks'
+import { useBooksDetailed } from '@/hooks/api/books/useBooksDetailed'
 import { cn } from '@/lib/utils'
 
 export function Books() {
 	const [params, setParams] = useSearchParams()
 	const page = Number(params.get('page') ?? 1) - 1
-	const { data } = useBooks(page)
+	const { data } = useBooksDetailed(page)
 
 	if (!data) return null
 
@@ -47,12 +48,21 @@ export function Books() {
 						key={book.id}
 						className='bg-card text-card-foreground px-4 py-2 rounded-[var(--radius)]'
 					>
-						<h2 className='text-xl font-medium'>{book.title}</h2>
-						<p>{book.publicationYear}</p>
-						<p>
-							<span className='font-medium'>{book.availableCopies}</span> copies
-							avaiable out of <span className='font-medium'>{book.totalCopies}</span>
+						<div className='flex justify-between gap-2'>
+							<h2 className='text-xl font-medium'>{book.title}</h2>
+							<p>{book.publicationYear}</p>
+						</div>
+						<p className='mb-2'>
+							{book.author.firstName} {book.author.lastName}
 						</p>
+
+						{book.availableCopies > 0 ? (
+							<Badge className='bg-green-400/40'>
+								{book.availableCopies} in stock
+							</Badge>
+						) : (
+							<Badge variant='destructive'>Out of stock</Badge>
+						)}
 					</div>
 				))}
 			</div>

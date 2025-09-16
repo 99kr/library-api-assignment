@@ -12,7 +12,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useLogin } from '@/hooks/api/useLogin'
+import { useLogin } from '@/hooks/api/auth/useLogin'
 import { useJwt } from '@/hooks/state/useJwt'
 import { setRefreshTokenState } from '@/lib/refreshTokenState'
 
