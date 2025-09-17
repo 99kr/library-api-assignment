@@ -19,8 +19,9 @@ public class AuthorController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<AuthorResponseDTO>>> findAll() {
-        return authorService.findAll().toEntity();
+    public ResponseEntity<ApiResponse<List<AuthorResponseDTO>>> findAll(
+            @RequestParam(required = false) String name) {
+        return authorService.findAll(name).toEntity();
     }
 
     @GetMapping("/name/{lastName}")

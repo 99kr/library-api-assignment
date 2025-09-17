@@ -7,6 +7,7 @@ import com.kr.libraryapiassignment.mapper.AuthorMapper;
 import com.kr.libraryapiassignment.repository.AuthorRepository;
 import com.kr.libraryapiassignment.response.ApiResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,10 +22,16 @@ public class AuthorService {
         this.authorMapper = authorMapper;
     }
 
-    public ApiResponse<List<AuthorResponseDTO>> findAll() {
+    public ApiResponse<List<AuthorResponseDTO>> findAll(@Nullable String name) {
         ApiResponse<List<AuthorResponseDTO>> response = new ApiResponse<>();
 
-        List<Author> authors = authorRepository.findAll();
+        List<Author> authors;
+
+        if (name == null || name.isBlank()) {
+            authors = authorRepository.findAll();
+        } else {
+            authors = authorRepository.findAllByFullNameContainingIgnoreCase(name);
+        }
 
         return response.setData(authorMapper.toDTO(authors));
     }
