@@ -1,5 +1,5 @@
 import { useDebounce } from '@uidotdev/usehooks'
-import { Check, ChevronsUpDown, LoaderCircle } from 'lucide-react'
+import { Check, ChevronsUpDown } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
@@ -59,38 +59,33 @@ export function AuthorCombobox({ setAuthor, author }: Props) {
 						className='h-9'
 						value={name}
 						onValueChange={setName}
+						isLoading={shouldDisplayLoader}
 					/>
 					<CommandList>
 						<CommandEmpty>
 							{name === '' ? 'Start searching...' : 'No authors found...'}
 						</CommandEmpty>
 						<CommandGroup>
-							{shouldDisplayLoader ? (
-								<CommandItem>
-									<LoaderCircle className='animate-spin mx-auto my-2' />
-								</CommandItem>
-							) : (
-								authors.map((listAuthor) => (
-									<CommandItem
-										value={listAuthor.id.toString()}
-										key={listAuthor.id}
-										onSelect={() => {
-											onSelect(listAuthor)
-										}}
-									>
-										{getFullName(listAuthor)}
+							{authors.map((listAuthor) => (
+								<CommandItem
+									value={listAuthor.id.toString()}
+									key={listAuthor.id}
+									onSelect={() => {
+										onSelect(listAuthor)
+									}}
+								>
+									{getFullName(listAuthor)}
 
-										<Check
-											className={cn(
-												'ml-auto',
-												listAuthor.id !== author.id
-													? 'opacity-0'
-													: 'opacity-100',
-											)}
-										/>
-									</CommandItem>
-								))
-							)}
+									<Check
+										className={cn(
+											'ml-auto',
+											listAuthor.id !== author.id
+												? 'opacity-0'
+												: 'opacity-100',
+										)}
+									/>
+								</CommandItem>
+							))}
 						</CommandGroup>
 					</CommandList>
 				</Command>
