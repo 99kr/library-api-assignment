@@ -9,9 +9,14 @@ import java.util.List;
 @Component
 public class AuditLogMapper {
     public AuditLogResponseDTO toDTO(AuditLog auditLog) {
-        return new AuditLogResponseDTO(auditLog.getId(), auditLog.getEmail(), auditLog.getAction(),
-                                       auditLog.getResource(),
-                                       auditLog.getTimestamp());
+        return new AuditLogResponseDTO(
+                auditLog.getId(),
+                auditLog.getEmail(),
+                auditLog.getAction(),
+                auditLog.getResource(),
+                auditLog.getDetails(),
+                auditLog.getTimestamp()
+        );
     }
 
     public List<AuditLogResponseDTO> toDTO(List<AuditLog> auditLogs) {

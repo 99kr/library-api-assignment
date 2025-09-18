@@ -16,7 +16,15 @@ public class AuditLogger {
     }
 
     public void log(String email, AuditLogAction action, String resource) {
-        auditLogRepository.save(new AuditLog(email, action.toString(), resource));
+        internalLog(email, action, resource, null);
+    }
+
+    public void log(String email, AuditLogAction action, String resource, String details) {
+        internalLog(email, action, resource, details);
+    }
+
+    private void internalLog(String email, AuditLogAction action, String resource, String details) {
+        auditLogRepository.save(new AuditLog(email, action.toString(), resource, details));
         logger.info("Saved audit log ({}, {}, {})", email, action, resource);
     }
 }

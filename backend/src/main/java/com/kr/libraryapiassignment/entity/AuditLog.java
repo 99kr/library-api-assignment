@@ -20,16 +20,20 @@ public class AuditLog {
     @Column(nullable = false)
     private String resource;
 
+    @Column
+    private String details;
+
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
     public AuditLog() {
     }
 
-    public AuditLog(String email, String action, String resource) {
+    public AuditLog(String email, String action, String resource, String details) {
         this.email = email;
         this.action = action;
         this.resource = resource;
+        this.details = details;
         this.timestamp = LocalDateTime.now();
     }
 
@@ -63,6 +67,14 @@ public class AuditLog {
 
     public void setResource(String resource) {
         this.resource = resource;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
     }
 
     public LocalDateTime getTimestamp() {
