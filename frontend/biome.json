@@ -28,6 +28,9 @@
 				"noUnknownAtRules": "off",
 				"noArrayIndexKey": "off",
 				"noDocumentCookie": "off"
+			},
+			"correctness": {
+				"useUniqueElementIds": "off"
 			}
 		}
 	},

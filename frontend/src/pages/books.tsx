@@ -1,5 +1,8 @@
+import { Plus } from 'lucide-react'
 import { useSearchParams } from 'react-router'
+import { CreateBookDialog } from '@/components/dialogs/create-book-dialog'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
 	Pagination,
 	PaginationContent,
@@ -9,9 +12,11 @@ import {
 	PaginationPrevious,
 } from '@/components/ui/pagination'
 import { useBooksDetailedQuery } from '@/hooks/api/books/useBooksDetailedQuery'
+import { useJwt } from '@/hooks/state/useJwt'
 import { cn } from '@/lib/utils'
 
 export function Books() {
+	const isAdmin = useJwt((state) => state.hasRole('ADMIN'))
 	const [params, setParams] = useSearchParams()
 	const page = Number(params.get('page') ?? 1) - 1
 	const { data } = useBooksDetailedQuery(page)
@@ -37,10 +42,22 @@ export function Books() {
 
 	return (
 		<>
-			<h1 className='text-4xl font-semibold'>Books</h1>
-			<p>
-				Showing {pageable.numberOfElements} books out of {pageable.totalElements}
-			</p>
+			<div className='flex justify-between items-center'>
+				<div>
+					<h1 className='text-4xl font-semibold'>Books</h1>
+					<p>
+						Showing {pageable.numberOfElements} books out of {pageable.totalElements}
+					</p>
+				</div>
+				{isAdmin && (
+					<CreateBookDialog>
+						<Button>
+							<Plus />
+							Add book
+						</Button>
+					</CreateBookDialog>
+				)}
+			</div>
 
 			<div className='grid grid-cols-4 gap-4 mt-4'>
 				{books.map((book) => (

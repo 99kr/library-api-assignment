@@ -1,4 +1,5 @@
 import useSWR from 'swr'
+import type { Author } from '@/hooks/api/authors/useAuthorsQuery'
 import { type BaseResponse, getRequest } from '@/lib/api'
 
 type BooksResponse = BaseResponse<{
@@ -8,13 +9,7 @@ type BooksResponse = BaseResponse<{
 		publicationYear: number
 		availableCopies: number
 		totalCopies: number
-		author: {
-			id: number
-			firstName: string
-			lastName: string
-			birthYear: number
-			nationality: string
-		}
+		author: Author
 	}[]
 	pageable: {
 		totalPages: number
