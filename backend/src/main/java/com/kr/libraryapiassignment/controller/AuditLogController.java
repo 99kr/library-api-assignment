@@ -20,8 +20,8 @@ public class AuditLogController {
         this.auditLogService = auditLogService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<AuditLogResponseDTO>>> findAll() {
         return auditLogService.findAll().toEntity();
     }
