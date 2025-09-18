@@ -7,6 +7,7 @@ type LogsResponse = BaseResponse<
 		email: string
 		action: string
 		resource: string
+		details: string | null
 		timestamp: string
 	}[]
 >

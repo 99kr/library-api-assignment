@@ -25,6 +25,7 @@ export function Logs() {
 						<TableHead>Email</TableHead>
 						<TableHead>Action</TableHead>
 						<TableHead>Resource</TableHead>
+						<TableHead>Details</TableHead>
 						<TableHead className='text-right'>Timestamp</TableHead>
 					</TableRow>
 				</TableHeader>
@@ -35,6 +36,7 @@ export function Logs() {
 							<TableCell>{log.email}</TableCell>
 							<TableCell>{log.action}</TableCell>
 							<TableCell>{log.resource}</TableCell>
+							<TableCell>{log.details}</TableCell>
 							<TableCell className='text-right'>
 								{new Date(log.timestamp).toLocaleString('sv-SE')}
 							</TableCell>
