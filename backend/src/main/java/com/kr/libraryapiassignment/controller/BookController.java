@@ -7,6 +7,7 @@ import com.kr.libraryapiassignment.service.BookService;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,7 +55,8 @@ public class BookController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<BookResponseDTO>> addBook(@RequestBody BookRequestDTO dto) {
-        return bookService.save(dto).toEntity();
+    public ResponseEntity<ApiResponse<BookResponseDTO>> addBook(@RequestBody BookRequestDTO dto,
+                                                                Authentication authentication) {
+        return bookService.save(dto, authentication).toEntity();
     }
 }

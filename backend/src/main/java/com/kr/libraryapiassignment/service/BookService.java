@@ -7,12 +7,15 @@ import com.kr.libraryapiassignment.mapper.BookMapper;
 import com.kr.libraryapiassignment.repository.AuthorRepository;
 import com.kr.libraryapiassignment.repository.BookRepository;
 import com.kr.libraryapiassignment.response.ApiResponse;
+import com.kr.libraryapiassignment.security.audit.AuditLogAction;
+import com.kr.libraryapiassignment.security.audit.AuditLogger;
 import com.kr.libraryapiassignment.specification.BookSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,11 +27,14 @@ public class BookService {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final BookMapper bookMapper;
+    private final AuditLogger auditLogger;
 
-    public BookService(BookRepository bookRepository, AuthorRepository authorRepository, BookMapper bookMapper) {
+    public BookService(BookRepository bookRepository, AuthorRepository authorRepository, BookMapper bookMapper,
+                       AuditLogger auditLogger) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.bookMapper = bookMapper;
+        this.auditLogger = auditLogger;
     }
 
     public ApiResponse<BookPageableResponseDTO> findAll(BookPageableRequestDTO dto) {
@@ -80,7 +86,7 @@ public class BookService {
         return response.setData(bookMapper.toDTO(bookOpt.get()));
     }
 
-    public ApiResponse<BookResponseDTO> save(BookRequestDTO dto) {
+    public ApiResponse<BookResponseDTO> save(BookRequestDTO dto, Authentication authentication) {
         ApiResponse<BookResponseDTO> response = new ApiResponse<>();
 
         if (dto.title() == null || dto.title().isBlank())
@@ -95,6 +101,8 @@ public class BookService {
             return response.setStatusCode(HttpStatus.BAD_REQUEST);
 
         Book book = bookRepository.save(bookMapper.toEntity(dto));
+
+        auditLogger.log(authentication.getName(), AuditLogAction.CREATED_BOOK, "/books", "Book ID: " + book.getId());
 
         return response.setData(bookMapper.toDTO(book)).setStatusCode(HttpStatus.CREATED);
     }

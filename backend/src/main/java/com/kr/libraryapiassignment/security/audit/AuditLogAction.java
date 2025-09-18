@@ -9,6 +9,8 @@ public enum AuditLogAction {
 
     REGISTER("Registered"),
     FAILED_REGISTER("Failed to register"),
+
+    CREATED_BOOK("Created book"),
     ;
 
     private final String name;
