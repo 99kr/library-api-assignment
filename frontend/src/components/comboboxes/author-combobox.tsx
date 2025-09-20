@@ -63,7 +63,7 @@ export function AuthorCombobox({ setAuthor, author }: Props) {
 					/>
 					<CommandList>
 						<CommandEmpty>
-							{name === '' ? 'Start searching...' : 'No authors found...'}
+							{debouncedName === '' ? 'Start searching...' : 'No authors found...'}
 						</CommandEmpty>
 						<CommandGroup>
 							{authors.map((listAuthor) => (
