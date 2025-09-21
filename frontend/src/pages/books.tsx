@@ -11,7 +11,7 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from '@/components/ui/pagination'
-import { useBooksDetailedQuery } from '@/hooks/api/books/useBooksDetailedQuery'
+import { useBooksDetailed } from '@/hooks/books'
 import { useJwt } from '@/hooks/state/useJwt'
 import { cn } from '@/lib/utils'
 
@@ -19,7 +19,7 @@ export function Books() {
 	const isAdmin = useJwt((state) => state.hasRole('ADMIN'))
 	const [params, setParams] = useSearchParams()
 	const page = Number(params.get('page') ?? 1) - 1
-	const { data } = useBooksDetailedQuery(page)
+	const { data } = useBooksDetailed(page)
 
 	if (!data) return null
 

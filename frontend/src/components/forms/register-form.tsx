@@ -12,7 +12,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useRegisterMutation } from '@/hooks/api/auth/useRegisterMutation'
+import { useRegister } from '@/hooks/auth'
 
 const passwordErrorMessage =
 	'Password must be at least 8 characters and contain both a letter and digit'
@@ -51,7 +51,7 @@ const formFields = [
 type FormFieldName = (typeof formFields)[number]['name']
 
 export function RegisterForm() {
-	const register = useRegisterMutation()
+	const register = useRegister()
 
 	const form = useForm<FormSchema>({
 		resolver: zodResolver(formSchema),

@@ -11,8 +11,8 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import type { Author } from '@/hooks/api/authors/useAuthorsQuery'
-import { useBooksMutation } from '@/hooks/api/books/useBooksMutation'
+import type { Author } from '@/hooks/authors'
+import { useCreateBook } from '@/hooks/books'
 
 const formSchema = z
 	.object({
@@ -67,7 +67,7 @@ const gridTemplate = `
 `
 
 export function CreateBookForm({ close }: { close: () => void }) {
-	const booksMutation = useBooksMutation()
+	const createBook = useCreateBook()
 
 	const form = useForm<FormSchema>({
 		resolver: zodResolver(formSchema),
@@ -86,7 +86,7 @@ export function CreateBookForm({ close }: { close: () => void }) {
 		if (typeof data.totalCopies !== 'number') return
 		if (data.author.id === -1) return
 
-		const response = await booksMutation.trigger({
+		const response = await createBook.trigger({
 			title: data.title,
 			authorId: data.author.id,
 			publicationYear: data.publicationYear,

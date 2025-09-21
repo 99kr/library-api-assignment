@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/command'
 import { FormControl } from '@/components/ui/form'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { type Author, useAuthorsQuery } from '@/hooks/api/authors/useAuthorsQuery'
+import { type Author, useAuthors } from '@/hooks/authors'
 import { cn } from '@/lib/utils'
 
 type Props = {
@@ -24,7 +24,7 @@ export function AuthorCombobox({ setAuthor, author }: Props) {
 	const [name, setName] = useState('')
 	const [open, setOpen] = useState(false)
 	const debouncedName = useDebounce(name, 500)
-	const { data, isLoading } = useAuthorsQuery(debouncedName)
+	const { data, isLoading } = useAuthors(debouncedName)
 
 	const onSelect = (_author: Author) => {
 		setAuthor(_author)

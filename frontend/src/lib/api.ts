@@ -10,6 +10,17 @@ export type BaseResponse<T = unknown> = {
 	data: T
 }
 
+export type Pageable = {
+	totalPages: number
+	totalElements: number
+	numberOfElements: number
+	size: number
+	last: boolean
+	first: boolean
+	hasPrevious: boolean
+	hasNext: boolean
+}
+
 export async function getRequest(url: string, options: RequestInit = {}) {
 	const accessToken = useJwt.getState().accessToken
 

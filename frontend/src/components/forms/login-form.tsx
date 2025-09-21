@@ -12,7 +12,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useLoginMutation } from '@/hooks/api/auth/useLoginMutation'
+import { useLogin } from '@/hooks/auth'
 import { useJwt } from '@/hooks/state/useJwt'
 import { setRefreshTokenState } from '@/lib/refreshTokenState'
 
@@ -29,7 +29,7 @@ const formFields = [
 ] as const
 
 export function LoginForm() {
-	const login = useLoginMutation()
+	const login = useLogin()
 	const jwt = useJwt()
 
 	const form = useForm<FormSchema>({
