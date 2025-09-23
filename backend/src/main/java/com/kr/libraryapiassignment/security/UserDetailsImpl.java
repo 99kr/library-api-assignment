@@ -6,14 +6,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 public class UserDetailsImpl implements UserDetails {
+    private final Long id;
     private final String username;
     private final String password;
     private final String firstName;
     private final String lastName;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(String username, String password, String firstName, String lastName,
+    public UserDetailsImpl(Long id, String username, String password, String firstName, String lastName,
                            Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.firstName = firstName;
@@ -21,12 +23,10 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+    public Long getId() {
+        return id;
     }
-
+    
     @Override
     public String getUsername() {
         return username;
@@ -43,5 +43,10 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getLastName() {
         return lastName;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
     }
 }
