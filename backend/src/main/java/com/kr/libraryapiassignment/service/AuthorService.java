@@ -8,6 +8,7 @@ import com.kr.libraryapiassignment.repository.AuthorRepository;
 import com.kr.libraryapiassignment.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class AuthorService {
         return response.setData(authorMapper.toDTO(authors));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<AuthorResponseDTO> save(AuthorRequestDTO dto) {
         ApiResponse<AuthorResponseDTO> response = new ApiResponse<>();
 

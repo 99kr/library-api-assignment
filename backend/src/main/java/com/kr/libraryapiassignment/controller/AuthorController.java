@@ -5,7 +5,6 @@ import com.kr.libraryapiassignment.dto.author.AuthorResponseDTO;
 import com.kr.libraryapiassignment.response.ApiResponse;
 import com.kr.libraryapiassignment.service.AuthorService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +30,6 @@ public class AuthorController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<AuthorResponseDTO>> addAuthor(@RequestBody AuthorRequestDTO dto) {
         return authorService.save(dto).toEntity();
     }

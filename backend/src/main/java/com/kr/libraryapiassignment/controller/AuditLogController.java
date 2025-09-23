@@ -4,7 +4,6 @@ import com.kr.libraryapiassignment.dto.auditlog.AuditLogResponseDTO;
 import com.kr.libraryapiassignment.response.ApiResponse;
 import com.kr.libraryapiassignment.service.AuditLogService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +20,6 @@ public class AuditLogController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<AuditLogResponseDTO>>> findAll() {
         return auditLogService.findAll().toEntity();
     }

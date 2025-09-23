@@ -5,6 +5,7 @@ import com.kr.libraryapiassignment.entity.AuditLog;
 import com.kr.libraryapiassignment.mapper.AuditLogMapper;
 import com.kr.libraryapiassignment.repository.AuditLogRepository;
 import com.kr.libraryapiassignment.response.ApiResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,13 +20,14 @@ public class AuditLogService {
         this.auditLogMapper = auditLogMapper;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<List<AuditLogResponseDTO>> findAll() {
         ApiResponse<List<AuditLogResponseDTO>> response = new ApiResponse<>();
 
         List<AuditLog> auditLogs = auditLogRepository.findAll();
 
         response.setData(auditLogMapper.toDTO(auditLogs));
-        
+
         return response;
     }
 }
