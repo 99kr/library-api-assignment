@@ -9,6 +9,7 @@ import com.kr.libraryapiassignment.mapper.UserMapper;
 import com.kr.libraryapiassignment.repository.UserRepository;
 import com.kr.libraryapiassignment.response.ApiResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class UserService {
         return response.setData(userMapper.toDTO(userOpt.get()));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ApiResponse<List<UserLoanResponseDTO>> findUserLoansById(Long id) {
         ApiResponse<List<UserLoanResponseDTO>> response = new ApiResponse<>();
 
