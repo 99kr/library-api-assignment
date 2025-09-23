@@ -46,7 +46,9 @@ public class RefreshTokenService {
 
     @Transactional
     public void deleteToken(String token) {
-        refreshTokenRepository.deleteByToken(token);
+        String hashedToken = refreshTokenEncoder.encode(token);
+
+        refreshTokenRepository.deleteByToken(hashedToken);
     }
 
     @Transactional
