@@ -3,7 +3,6 @@ package com.kr.libraryapiassignment.service;
 import com.kr.libraryapiassignment.dto.auth.*;
 import com.kr.libraryapiassignment.dto.user.UserRequestDTO;
 import com.kr.libraryapiassignment.dto.user.UserResponseDTO;
-import com.kr.libraryapiassignment.repository.UserRepository;
 import com.kr.libraryapiassignment.response.ApiResponse;
 import com.kr.libraryapiassignment.security.audit.AuditLogAction;
 import com.kr.libraryapiassignment.security.audit.AuditLogger;
@@ -21,31 +20,42 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
-    private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
     private final UserDetailsServiceImpl userDetailsService;
     private final RefreshTokenService refreshTokenService;
     private final AuditLogger auditLogger;
+    private final BruteForceService bruteForceService;
 
-    public AuthService(AuthenticationManager authenticationManager, UserService userService,
-                       UserRepository userRepository, JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService,
-                       RefreshTokenService refreshTokenService, AuditLogger auditLogger) {
+    public AuthService(AuthenticationManager authenticationManager, UserService userService, JwtUtils jwtUtils,
+                       UserDetailsServiceImpl userDetailsService, RefreshTokenService refreshTokenService,
+                       AuditLogger auditLogger, BruteForceService bruteForceService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
-        this.userRepository = userRepository;
         this.jwtUtils = jwtUtils;
         this.userDetailsService = userDetailsService;
         this.refreshTokenService = refreshTokenService;
         this.auditLogger = auditLogger;
+        this.bruteForceService = bruteForceService;
     }
 
     public ApiResponse<LoginResponseDTO> login(LoginRequestDTO dto) {
         ApiResponse<LoginResponseDTO> response = new ApiResponse<>();
+
+        Optional<Long> optLockedTime = bruteForceService.getLockedTime(dto.email());
+        if (optLockedTime.isPresent()) {
+            long seconds = TimeUnit.MILLISECONDS.toSeconds(optLockedTime.get());
+
+            return response
+                    .addError("Too many attempts, please wait " + seconds + " seconds.")
+                    .setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
+        }
 
         try {
             UsernamePasswordAuthenticationToken token =
@@ -72,6 +82,7 @@ public class AuthService {
             );
 
             auditLogger.log(dto.email(), AuditLogAction.LOGIN, "/auth/login");
+            bruteForceService.loginSucceeded(dto.email());
 
             return response
                     .addCookie(refreshCookie)
@@ -79,6 +90,7 @@ public class AuthService {
 
         } catch (Exception e) {
             auditLogger.log(dto.email(), AuditLogAction.FAILED_LOGIN, "/auth/login");
+            bruteForceService.loginFailed(dto.email());
 
             return response.addError("Bad credentials").setStatusCode(HttpStatus.BAD_REQUEST);
         }

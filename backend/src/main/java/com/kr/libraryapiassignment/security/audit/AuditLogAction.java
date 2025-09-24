@@ -3,6 +3,7 @@ package com.kr.libraryapiassignment.security.audit;
 public enum AuditLogAction {
     LOGIN("Logged in"),
     FAILED_LOGIN("Failed login"),
+    LOGIN_BLOCKED("Login blocked"),
 
     LOGOUT("Logged out"),
     FAILED_LOGOUT("Failed logout"),
