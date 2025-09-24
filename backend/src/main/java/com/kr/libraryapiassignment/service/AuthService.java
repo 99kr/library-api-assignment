@@ -48,6 +48,15 @@ public class AuthService {
     public ApiResponse<LoginResponseDTO> login(LoginRequestDTO dto) {
         ApiResponse<LoginResponseDTO> response = new ApiResponse<>();
 
+        if (dto.email() == null || dto.email().isBlank())
+            response.addError("email", "Email is required");
+
+        if (dto.password() == null || dto.password().isBlank())
+            response.addError("password", "Password is required");
+
+        if (response.hasErrors())
+            return response.setStatusCode(HttpStatus.BAD_REQUEST);
+
         Optional<Long> optLockedTime = bruteForceService.getLockedTime(dto.email());
         if (optLockedTime.isPresent()) {
             long seconds = TimeUnit.MILLISECONDS.toSeconds(optLockedTime.get());
