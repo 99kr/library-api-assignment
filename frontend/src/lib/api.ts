@@ -8,6 +8,7 @@ const API_URL = 'http://localhost:8765/api/v1'
 export type BaseResponse<T = unknown> = {
 	errors: { field?: string; message: string }[]
 	data: T
+	status: number
 }
 
 export type Pageable = {
@@ -36,7 +37,11 @@ export async function getRequest(url: string, options: RequestInit = {}) {
 
 	throwAppropiateError(response.status)
 
-	return response.json()
+	const json = await response.json()
+
+	json.status = response.status
+
+	return json
 }
 
 export async function postRequest(url: string, body?: { arg: unknown }, options: RequestInit = {}) {
@@ -57,7 +62,11 @@ export async function postRequest(url: string, body?: { arg: unknown }, options:
 
 	throwAppropiateError(response.status)
 
-	return response.json()
+	const json = await response.json()
+
+	json.status = response.status
+
+	return json
 }
 
 export function postRequestWithCredentials(
