@@ -10,6 +10,7 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
+	FormRootMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useLogin } from '@/hooks/auth'
@@ -28,6 +29,8 @@ const formFields = [
 	{ name: 'password', type: 'password', label: 'Password', placeholder: '••••••••••••' },
 ] as const
 
+type FormFieldName = (typeof formFields)[number]['name']
+
 export function LoginForm() {
 	const login = useLogin()
 	const jwt = useJwt()
@@ -43,8 +46,23 @@ export function LoginForm() {
 		const response = await login.trigger(data)
 
 		if (response.errors.length > 0) {
-			form.setError('email', { message: 'Invalid credentials', type: 'value' })
-			form.setError('password', { message: 'Invalid credentials', type: 'value' })
+			for (const error of response.errors) {
+				if (error.field) {
+					form.setError(error.field as FormFieldName, {
+						message: error.message,
+						type: 'value',
+					})
+				} else {
+					// If we get a bad request, mark the fields as errors
+					if (response.status === 400) {
+						form.setError('email', { type: 'value' })
+						form.setError('password', { type: 'value' })
+					}
+
+					form.setError('root', { message: error.message, type: 'value' })
+				}
+			}
+
 			return
 		}
 
@@ -82,6 +100,8 @@ export function LoginForm() {
 						)}
 					/>
 				))}
+
+				<FormRootMessage />
 
 				<Button type='submit' className='w-full' disabled={login.isMutating}>
 					Log in
