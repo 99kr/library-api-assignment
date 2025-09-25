@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { RouterProvider } from 'react-router'
 import type { SWRConfiguration } from 'swr'
 import { SWRConfig } from 'swr'
@@ -9,6 +9,7 @@ import { router } from '@/router'
 
 export function App() {
 	const jwt = useJwt()
+	const [isLoading, setIsLoading] = useState(true)
 
 	useEffect(() => {
 		if (jwt.accessToken) return
@@ -30,7 +31,7 @@ export function App() {
 			jwt.setIdentityFromJwtToken(accessToken)
 		}
 
-		handleInitialRefreshTry()
+		handleInitialRefreshTry().finally(() => setIsLoading(false))
 	}, [
 		jwt.accessToken,
 		jwt.setAccessToken,
@@ -73,6 +74,8 @@ export function App() {
 
 		revalidate()
 	}
+
+	if (isLoading) return null
 
 	return (
 		<SWRConfig
