@@ -85,7 +85,8 @@ public class JwtUtils {
             jwtBuilder.addClaims(Map.of(
                     "roles", roles,
                     "firstName", userPrincipal.getFirstName(),
-                    "lastName", userPrincipal.getLastName()
+                    "lastName", userPrincipal.getLastName(),
+                    "id", userPrincipal.getId()
             ));
         }
 
