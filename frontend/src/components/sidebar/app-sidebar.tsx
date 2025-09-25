@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar'
 import { useJwt } from '@/hooks/state/useJwt'
 import { useTheme } from '@/hooks/state/useTheme'
-import { cn } from '@/lib/utils'
 
 const groups: Group[] = [
 	{
@@ -40,13 +39,8 @@ export function AppSidebar() {
 					<AppSidebarGroup group={group} key={group.name ?? i} />
 				))}
 			</SidebarContent>
-			<SidebarFooter
-				className={cn(
-					'transition-opacity opacity-0 ease-in-out',
-					identity && 'opacity-100',
-				)}
-			>
-				{!identity?.isLoggedIn ? (
+			<SidebarFooter>
+				{!identity ? (
 					<Button asChild variant='outline'>
 						<Link to='/login'>Log in</Link>
 					</Button>
