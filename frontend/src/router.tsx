@@ -6,6 +6,7 @@ import { Layout } from '@/pages/layout'
 import { Login } from '@/pages/login'
 import { Logout } from '@/pages/logout'
 import { Logs } from '@/pages/logs'
+import { MyLoans } from '@/pages/my-loans'
 import { NotFound } from '@/pages/not-found'
 import { Register } from '@/pages/register'
 
@@ -16,6 +17,8 @@ export const router = createBrowserRouter(
 				<Route path='/' element={<Home />} />
 
 				<Route path='/books' element={<Books />} />
+
+				<Route path='/my-loans' element={<MyLoans />} />
 
 				<Route path='/logs' element={<Logs />} />
 

@@ -1,4 +1,4 @@
-import { BookText, ScrollText, SunMoon, SwatchBook } from 'lucide-react'
+import { BookText, BookUp2, ScrollText, SunMoon, SwatchBook } from 'lucide-react'
 import { Link } from 'react-router'
 import { AppSidebarGroup, type Group } from '@/components/sidebar/app-sidebar-group'
 import { ProfileDropdown } from '@/components/sidebar/profile-dropdown'
@@ -11,6 +11,11 @@ import { useTheme } from '@/hooks/state/useTheme'
 const groups: Group[] = [
 	{
 		items: [{ name: 'Books', href: '/books', icon: BookText }],
+	},
+	{
+		name: 'Profile',
+		role: 'USER',
+		items: [{ name: 'My loans', href: '/my-loans', icon: BookUp2 }],
 	},
 	{
 		name: 'Administration',
