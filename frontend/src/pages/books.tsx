@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/pagination'
 import { useBooksDetailed } from '@/hooks/books'
 import { useJwt } from '@/hooks/state/useJwt'
-import { cn } from '@/lib/utils'
+import { cn, getRandomImgUrl } from '@/lib/utils'
 
 export function Books() {
 	const isAdmin = useJwt((state) => state.hasRole('ADMIN'))
@@ -63,8 +63,15 @@ export function Books() {
 				{books.map((book) => (
 					<div
 						key={book.id}
-						className='bg-card text-card-foreground px-4 py-2 rounded-[var(--radius)]'
+						className='bg-card text-card-foreground px-4 py-4 rounded-[var(--radius)]'
 					>
+						<img
+							alt={book.title}
+							className='w-full h-52 object-cover rounded-md mb-2 bg-gradient-to-bl from-background to-card'
+							loading='lazy'
+							src={getRandomImgUrl(book.title)}
+						/>
+
 						<div className='flex justify-between gap-2'>
 							<h2 className='text-xl font-medium'>{book.title}</h2>
 							<p>{book.publicationYear}</p>
@@ -73,13 +80,11 @@ export function Books() {
 							{book.author.firstName} {book.author.lastName}
 						</p>
 
-						{book.availableCopies > 0 ? (
-							<Badge className='bg-green-400/40'>
-								{book.availableCopies} in stock
-							</Badge>
-						) : (
-							<Badge variant='destructive'>Out of stock</Badge>
-						)}
+						<Badge variant={book.availableCopies > 0 ? 'green' : 'red'}>
+							{book.availableCopies > 0
+								? `${book.availableCopies} in stock`
+								: 'Out of stock'}
+						</Badge>
 					</div>
 				))}
 			</div>

@@ -24,3 +24,7 @@ export function msToDaysHoursMinutesAndSeconds(milliseconds: number) {
 
 	return `${padToDoubleDigits(days)}:${padToDoubleDigits(hours)}:${padToDoubleDigits(minutes)}:${padToDoubleDigits(seconds)}`
 }
+
+export function getRandomImgUrl(seed: string) {
+	return `https://picsum.photos/seed/${seed}/512/512`
+}
