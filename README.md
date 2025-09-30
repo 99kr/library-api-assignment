@@ -19,9 +19,11 @@ A school project for the courses Java Spring and Säker mjukvara ("Secure Softwa
 
     3.3. [Books](#books)
 
-    3.4. [Logs](#logs)
+    3.4. [My loans](#my-loans)
 
-    3.5. [Error](#error)
+    3.5. [Logs](#logs)
+
+    3.6. [Error](#error)
 
 4. [Future Improvements & Notes](#future-improvements--notes)
 
@@ -41,8 +43,10 @@ Assignment criterias can be found here:
 
 ### Backend
 
--   Authentication using JWT (access and refresh tokens)
+-   Authentication using JWT (access and revokable refresh tokens)
 -   Authorization with roles
+-   Login brute force protection
+-   Rate limiting per ip
 -   Audit logging involving important user actions
 -   Get, search and create books. With pagination, sorting and filtering.
 -   Get, search and create authors.
@@ -58,6 +62,7 @@ Assignment criterias can be found here:
 -   Automatic handling of JWT refresh tokens when access token expires
 -   Login, logout and register
 -   Paginated view of all books
+-   View your own loans
 -   Overview of JWT information for debug & development purposes
 -   Abiltity to create books
 -   Barebones page for viewing audit logs
@@ -102,9 +107,13 @@ Assignment criterias can be found here:
 
 ![Screenshot of the create book dialog](docs/books-create-dialog.png)
 
+### My loans
+
+![Screenshot of the my loans page](docs/my-loans-page.png)
+
 ### Logs
 
-### Table view of audit logs
+#### Table view of audit logs
 
 ![Screenshot of the logs page](docs/logs-page.png)
 
@@ -126,11 +135,7 @@ Possible future improvements and concerns that I currently have with the project
 
 -   The frontend basically contains nothing, just a picked few features to help while fulfilling [the criterias of the assigment](https://github.com/nilsedgarjacobsen/THS24-sakermjukvara/blob/main/spring_security_exam.md).
 
--   SWR hooks are also kind of messy, and would definitely benefit from being improved upon. I don't see any scalability with the current implementation with having a file for each endpoint.
-
 -   I would say the frontend has no sense of modularity, no generic components on top of shadcn/ui, no reusability of e.g forms etc.
-
--   Requests are being sent before we had time to initially refresh the jwt token (which means there will be an initial 401 errored request on the first page load).
 
 -   Barely any unit tests for the backend (which 1/3 is failing).
 
@@ -140,4 +145,4 @@ Possible future improvements and concerns that I currently have with the project
 
 -   Decisions are not entirely thought through, with a lot of them being based on the course requirements and just getting it to work.
 
--   Backend currently using a SQLite database, as that was included into the assignment. Would be better off using a proper database like PostgreSQL or MySQL.
+-   Backend currently using a SQLite database, as that was included into the assignment. Would be better off using a more suitable database like PostgreSQL or MySQL.
